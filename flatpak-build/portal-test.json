@@ -1,0 +1,39 @@
+{
+    "app-id": "org.kde.PortalTest",
+    "runtime": "org.kde.Platform",
+    "runtime-version": "master",
+    "sdk": "org.kde.Sdk",
+    "command": "portal-test-kde",
+    "finish-args": [
+        "--socket=x11"
+    ],
+    "build-options" : {
+        "cflags": "-O2 -g",
+        "cxxflags": "-O2 -g",
+        "env": {
+            "V": "1"
+        }
+    },
+    "modules": [
+        {
+            "name": "flatpak-platform-plugin",
+            "cmake": true,
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "file:///home/jgrulich/development/projects/flatpak/flatpak-platform-plugin/"
+                }
+            ]
+        },
+        {
+            "name": "portal-test",
+            "cmake": true,
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "file:///home/jgrulich/development/projects/flatpak/flatpak-portal-test-kde"
+                }
+            ]
+        }
+    ]
+}
