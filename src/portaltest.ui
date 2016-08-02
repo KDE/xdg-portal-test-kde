@@ -14,8 +14,8 @@
    <string>KDE Portal test</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,4">
       <item>
        <widget class="QLabel" name="label">
@@ -36,7 +36,7 @@
       </item>
      </layout>
     </item>
-    <item>
+    <item row="1" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,2,2">
       <item>
        <widget class="QLabel" name="label_2">
@@ -63,7 +63,37 @@
       </item>
      </layout>
     </item>
-    <item>
+    <item row="2" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,4">
+      <item>
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Link:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://kde.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#508ed8;&quot;&gt;KDE&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::RichText</enum>
+        </property>
+        <property name="openExternalLinks">
+         <bool>true</bool>
+        </property>
+        <property name="textInteractionFlags">
+         <set>Qt::TextBrowserInteraction</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="3" column="0">
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -77,13 +107,9 @@
      </spacer>
     </item>
    </layout>
-   <zorder>label</zorder>
-   <zorder>sandboxLabel</zorder>
-   <zorder>label_2</zorder>
-   <zorder>openFile</zorder>
-   <zorder>sandboxLabel</zorder>
-   <zorder>label</zorder>
    <zorder>verticalSpacer</zorder>
+   <zorder>label_4</zorder>
+   <zorder>label_3</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
