@@ -23,6 +23,7 @@
 
 #include <QFile>
 #include <QFileDialog>
+#include <QStandardPaths>
 
 Q_LOGGING_CATEGORY(PortalTestKde, "portal-test-kde")
 
@@ -53,6 +54,7 @@ void PortalTest::openFileRequested()
     fileDialog->setMimeTypeFilters(QStringList { QLatin1String("text/plain"), QLatin1String("image/png") } );
     fileDialog->setLabelText(QFileDialog::Accept, QLatin1String("Open (portal)"));
     fileDialog->setModal(false);
+    fileDialog->setWindowTitle(QLatin1String("Flatpak test - open dialog"));
 
     if (fileDialog->exec() == QDialog::Accepted) {
         if (!fileDialog->selectedFiles().isEmpty()) {
@@ -69,6 +71,9 @@ void PortalTest::saveFileRequested()
     fileDialog->setLabelText(QFileDialog::Accept, QLatin1String("Save (portal)"));
     fileDialog->setNameFilters(QStringList { QLatin1String("Fooo (*.txt *.patch)"), QLatin1String("Text (*.doc *.docx)"), QLatin1String("Any file (*)") });
     fileDialog->setModal(true);
+    fileDialog->setDirectory(QStandardPaths::standardLocations(QStandardPaths::ConfigLocation).last());
+    fileDialog->selectFile(QLatin1String("test.txt"));
+    fileDialog->setWindowTitle(QLatin1String("Flatpak test - save dialog"));
 
     if (fileDialog->exec() == QDialog::Accepted) {
         if (!fileDialog->selectedFiles().isEmpty()) {
