@@ -22,6 +22,7 @@
 #include "ui_portaltest.h"
 
 #include <QFile>
+#include <QFileDialog>
 
 Q_LOGGING_CATEGORY(PortalTestKde, "portal-test-kde")
 
@@ -34,11 +35,47 @@ PortalTest::PortalTest(QWidget *parent, Qt::WindowFlags f)
     m_mainWindow->setupUi(this);
 
     m_mainWindow->sandboxLabel->setText(isRunningSandbox() ? QLatin1String("yes") : QLatin1String("no"));
+
+    connect(m_mainWindow->openFile, &QPushButton::clicked, this, &PortalTest::openFileRequested);
+    connect(m_mainWindow->saveFile, &QPushButton::clicked, this, &PortalTest::saveFileRequested);
 }
 
 PortalTest::~PortalTest()
 {
     delete m_mainWindow;
+}
+
+void PortalTest::openFileRequested()
+{
+    QFileDialog *fileDialog = new QFileDialog(this);
+    fileDialog->setFileMode(QFileDialog::ExistingFiles);
+//     fileDialog->setNameFilters(QStringList { QLatin1String("Fooo (*.txt *.patch)"), QLatin1String("Text (*.doc *.docx)"), QLatin1String("Any file (*)") });
+    fileDialog->setMimeTypeFilters(QStringList { QLatin1String("text/plain"), QLatin1String("image/png") } );
+    fileDialog->setLabelText(QFileDialog::Accept, QLatin1String("Open (portal)"));
+    fileDialog->setModal(false);
+
+    if (fileDialog->exec() == QDialog::Accepted) {
+        if (!fileDialog->selectedFiles().isEmpty()) {
+            m_mainWindow->selectedFiles->setText(fileDialog->selectedFiles().join(QLatin1String(", ")));
+        }
+        fileDialog->deleteLater();
+    }
+}
+
+void PortalTest::saveFileRequested()
+{
+    QFileDialog *fileDialog = new QFileDialog(this);
+    fileDialog->setAcceptMode(QFileDialog::AcceptSave);
+    fileDialog->setLabelText(QFileDialog::Accept, QLatin1String("Save (portal)"));
+    fileDialog->setNameFilters(QStringList { QLatin1String("Fooo (*.txt *.patch)"), QLatin1String("Text (*.doc *.docx)"), QLatin1String("Any file (*)") });
+    fileDialog->setModal(true);
+
+    if (fileDialog->exec() == QDialog::Accepted) {
+        if (!fileDialog->selectedFiles().isEmpty()) {
+            m_mainWindow->selectedFiles->setText(fileDialog->selectedFiles().join(QLatin1String(", ")));
+        }
+        fileDialog->deleteLater();
+    }
 }
 
 bool PortalTest::isRunningSandbox()
@@ -53,3 +90,4 @@ bool PortalTest::isRunningSandbox()
 
     return file.exists();
 }
+

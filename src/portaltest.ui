@@ -14,45 +14,52 @@
    <string>KDE Portal test</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
+   <layout class="QFormLayout" name="formLayout">
     <item row="0" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,4">
-      <item>
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>In sandbox:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="sandboxLabel">
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <widget class="QLabel" name="label">
+      <property name="text">
+       <string>In sandbox:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLabel" name="sandboxLabel">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
     </item>
     <item row="1" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,2,2">
+     <widget class="QLabel" name="label_2">
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="text">
+       <string>FileChooser:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QLabel" name="label_2">
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
-        </property>
-        <property name="text">
-         <string>FileChooser:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <widget class="QLineEdit" name="selectedFiles">
+        <property name="readOnly">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="KUrlRequester" name="openFile"/>
+       <widget class="QPushButton" name="openFile">
+        <property name="text">
+         <string>Open...</string>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QPushButton" name="saveFile">
@@ -64,36 +71,42 @@
      </layout>
     </item>
     <item row="2" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="1,4">
-      <item>
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Link:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://kde.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#508ed8;&quot;&gt;KDE&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-        <property name="textFormat">
-         <enum>Qt::RichText</enum>
-        </property>
-        <property name="openExternalLinks">
-         <bool>true</bool>
-        </property>
-        <property name="textInteractionFlags">
-         <set>Qt::TextBrowserInteraction</set>
-        </property>
-       </widget>
-      </item>
-     </layout>
+     <widget class="QLabel" name="label_5">
+      <property name="text">
+       <string>KUrlRequester</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="KUrlRequester" name="kurlrequester"/>
     </item>
     <item row="3" column="0">
+     <widget class="QLabel" name="label_3">
+      <property name="text">
+       <string>Link:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QLabel" name="label_4">
+      <property name="text">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://kde.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#508ed8;&quot;&gt;KDE&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::RichText</enum>
+      </property>
+      <property name="openExternalLinks">
+       <bool>true</bool>
+      </property>
+      <property name="textInteractionFlags">
+       <set>Qt::TextBrowserInteraction</set>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0" colspan="2">
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -107,9 +120,14 @@
      </spacer>
     </item>
    </layout>
-   <zorder>verticalSpacer</zorder>
-   <zorder>label_4</zorder>
+   <zorder>label</zorder>
+   <zorder>sandboxLabel</zorder>
+   <zorder>label_2</zorder>
    <zorder>label_3</zorder>
+   <zorder>label_4</zorder>
+   <zorder>verticalSpacer</zorder>
+   <zorder>kurlrequester</zorder>
+   <zorder>label_5</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

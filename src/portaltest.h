@@ -38,6 +38,10 @@ public:
     PortalTest(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
     ~PortalTest();
 
+public Q_SLOTS:
+    void openFileRequested();
+    void saveFileRequested();
+
 private:
     bool isRunningSandbox();
 
