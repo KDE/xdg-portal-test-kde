@@ -21,9 +21,13 @@
 #include "portaltest.h"
 #include "ui_portaltest.h"
 
+#include <QDBusConnection>
+#include <QDBusConnectionInterface>
 #include <QFile>
 #include <QFileDialog>
 #include <QStandardPaths>
+
+#include <KNotification>
 
 Q_LOGGING_CATEGORY(PortalTestKde, "portal-test-kde")
 
@@ -39,11 +43,17 @@ PortalTest::PortalTest(QWidget *parent, Qt::WindowFlags f)
 
     connect(m_mainWindow->openFile, &QPushButton::clicked, this, &PortalTest::openFileRequested);
     connect(m_mainWindow->saveFile, &QPushButton::clicked, this, &PortalTest::saveFileRequested);
+    connect(m_mainWindow->notifyButton, &QPushButton::clicked, this, &PortalTest::sendNotification);
 }
 
 PortalTest::~PortalTest()
 {
     delete m_mainWindow;
+}
+
+void PortalTest::notificationActivated(uint action)
+{
+    m_mainWindow->notificationResponse->setText(QString("Action number %1 activated").arg(QString::number(action)));
 }
 
 void PortalTest::openFileRequested()
@@ -81,6 +91,25 @@ void PortalTest::saveFileRequested()
         }
         fileDialog->deleteLater();
     }
+}
+
+void PortalTest::sendNotification()
+{
+    KNotification *notify = new KNotification(QLatin1String("notification"), this);
+    connect(notify, static_cast<void (KNotification::*)(uint)>(&KNotification::activated), this, &PortalTest::notificationActivated);
+    connect(m_mainWindow->notifyCloseButton, &QPushButton::clicked, notify, &KNotification::close);
+    connect(notify, &KNotification::closed, [this] () {
+        m_mainWindow->notifyCloseButton->setDisabled(true);
+    });
+
+    notify->setFlags(KNotification::DefaultEvent);
+    notify->setTitle(QLatin1String("Notification test"));
+    notify->setText(QLatin1String("<html><b>Hello world!!<b><html>"));
+    notify->setActions(QStringList { i18n("Action 1"), i18n("Action 2")});
+    notify->setIconName(QLatin1String("applications-development"));
+
+    m_mainWindow->notifyCloseButton->setEnabled(true);
+    notify->sendEvent();
 }
 
 bool PortalTest::isRunningSandbox()

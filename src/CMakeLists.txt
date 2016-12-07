@@ -15,6 +15,7 @@ target_link_libraries(portal-test-kde
     Qt5::Widgets
     KF5::I18n
     KF5::KIOFileWidgets
+    KF5::Notifications
 )
 
 install(TARGETS portal-test-kde DESTINATION ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})

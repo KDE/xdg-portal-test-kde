@@ -16,6 +16,16 @@
     },
     "modules": [
         {
+            "name": "knotifications",
+            "cmake": true,
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/grulja/knotifications.git"
+                }
+            ]
+        },
+        {
             "name": "flatpak-platform-plugin",
             "cmake": true,
             "sources": [

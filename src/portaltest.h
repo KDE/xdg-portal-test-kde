@@ -39,9 +39,10 @@ public:
     ~PortalTest();
 
 public Q_SLOTS:
+    void notificationActivated(uint action);
     void openFileRequested();
     void saveFileRequested();
-
+    void sendNotification();
 private:
     bool isRunningSandbox();
 
