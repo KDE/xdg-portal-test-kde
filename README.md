@@ -8,7 +8,7 @@ A Qt/KDE implementation can be found in [xdg-desktop-portal-kde](https://github.
 
 To use this test, use the build script in flatpak-build/ to produce a flatpak of portal-test, then install it with
 
-    flatpak remote-add --user portal-test-kde file:///path/to/repo
+    flatpak remote-add --user --no-gpg-verify portal-test-kde file:///path/to/repo
     flatpak install --user portal-test-kde org.kde.PortalTest
 
 and run it with
