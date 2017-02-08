@@ -21,17 +21,13 @@
             "sources": [
                 {
                     "type": "git",
-                    "url": "https://github.com/grulja/knotifications.git"
-                }
-            ]
-        },
-        {
-            "name": "flatpak-platform-plugin",
-            "cmake": true,
-            "sources": [
+                    "url": "https://anongit.kde.org/knotifications.git"
+                },
                 {
-                    "type": "git",
-                    "url": "https://github.com/grulja/flatpak-platform-plugin.git"
+                    "type": "shell",
+                    "commands": [
+                        "sed -i s'/5.31/5.30/' CMakeLists.txt"
+                    ]
                 }
             ]
         },
