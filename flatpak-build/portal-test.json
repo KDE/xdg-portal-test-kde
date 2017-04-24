@@ -5,7 +5,13 @@
     "sdk": "org.kde.Sdk",
     "command": "portal-test-kde",
     "finish-args": [
-        "--socket=x11"
+        "--share=ipc",
+        "--socket=x11",
+        "--socket=wayland",
+        "--filesystem=host",
+        "--device=dri",
+        "--env=QT_QPA_PLATFORM=flatpak",
+        "--env=QT_LOGGING_RULES=qt.qpa.qflatpak*.debug=true"
     ],
     "build-options" : {
         "cflags": "-O2 -g",
@@ -16,23 +22,7 @@
     },
     "modules": [
         {
-            "name": "knotifications",
-            "cmake": true,
-            "sources": [
-                {
-                    "type": "git",
-                    "url": "https://anongit.kde.org/knotifications.git"
-                },
-                {
-                    "type": "shell",
-                    "commands": [
-                        "sed -i s'/5.31/5.30/' CMakeLists.txt"
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "portal-test",
+            "name": "portal-test-kde",
             "cmake": true,
             "sources": [
                 {
