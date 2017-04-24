@@ -21,11 +21,17 @@
 #include "portaltest.h"
 #include "ui_portaltest.h"
 
+#include <QDBusArgument>
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
+#include <QDBusUnixFileDescriptor>
 #include <QFile>
 #include <QFileDialog>
+#include <QPainter>
+#include <QPdfWriter>
 #include <QStandardPaths>
+#include <QTemporaryFile>
+#include <QWindow>
 
 #include <KNotification>
 
@@ -40,10 +46,12 @@ PortalTest::PortalTest(QWidget *parent, Qt::WindowFlags f)
     m_mainWindow->setupUi(this);
 
     m_mainWindow->sandboxLabel->setText(isRunningSandbox() ? QLatin1String("yes") : QLatin1String("no"));
+    m_mainWindow->printWarning->setText(QLatin1String("Select an image in PNG format using FileChooser part!!"));
 
     connect(m_mainWindow->openFile, &QPushButton::clicked, this, &PortalTest::openFileRequested);
     connect(m_mainWindow->saveFile, &QPushButton::clicked, this, &PortalTest::saveFileRequested);
     connect(m_mainWindow->notifyButton, &QPushButton::clicked, this, &PortalTest::sendNotification);
+    connect(m_mainWindow->printButton, &QPushButton::clicked, this, &PortalTest::printDocument);
 }
 
 PortalTest::~PortalTest()
@@ -60,7 +68,6 @@ void PortalTest::openFileRequested()
 {
     QFileDialog *fileDialog = new QFileDialog(this);
     fileDialog->setFileMode(QFileDialog::ExistingFiles);
-//     fileDialog->setNameFilters(QStringList { QLatin1String("Fooo (*.txt *.patch)"), QLatin1String("Text (*.doc *.docx)"), QLatin1String("Any file (*)") });
     fileDialog->setMimeTypeFilters(QStringList { QLatin1String("text/plain"), QLatin1String("image/png") } );
     fileDialog->setLabelText(QFileDialog::Accept, QLatin1String("Open (portal)"));
     fileDialog->setModal(false);
@@ -69,9 +76,132 @@ void PortalTest::openFileRequested()
     if (fileDialog->exec() == QDialog::Accepted) {
         if (!fileDialog->selectedFiles().isEmpty()) {
             m_mainWindow->selectedFiles->setText(fileDialog->selectedFiles().join(QLatin1String(", ")));
+            if (fileDialog->selectedFiles().first().endsWith(QLatin1String(".png"))) {
+                m_mainWindow->printButton->setEnabled(true);
+                m_mainWindow->printWarning->setVisible(false);
+            } else {
+                m_mainWindow->printButton->setEnabled(false);
+                m_mainWindow->printWarning->setVisible(true);
+            }
         }
         fileDialog->deleteLater();
     }
+}
+
+void PortalTest::gotPrintResponse(uint response, const QVariantMap &results)
+{
+    // TODO do cleaning
+    qWarning() << response << results;
+}
+
+void PortalTest::gotPreparePrintResponse(uint response, const QVariantMap &results)
+{
+    if (!response) {
+        QVariantMap settings;
+        QVariantMap pageSetup;
+
+        QDBusArgument dbusArgument = results.value(QLatin1String("settings")).value<QDBusArgument>();
+        dbusArgument >> settings;
+
+        QDBusArgument dbusArgument1 = results.value(QLatin1String("page-setup")).value<QDBusArgument>();
+        dbusArgument1 >> pageSetup;
+
+        QTemporaryFile tempFile;
+        tempFile.setAutoRemove(false);
+        if (!tempFile.open()) {
+            qWarning() << "Couldn't generate pdf file";
+            return;
+        }
+
+        QPdfWriter writer(tempFile.fileName());
+        QPainter painter(&writer);
+
+        if (pageSetup.contains(QLatin1String("Orientation"))) {
+            const QString orientation = pageSetup.value(QLatin1String("Orientation")).toString();
+            if (orientation == QLatin1String("portrait") || orientation == QLatin1String("revers-portrait")) {
+                writer.setPageOrientation(QPageLayout::Portrait);
+            } else if (orientation == QLatin1String("landscape") || orientation == QLatin1String("reverse-landscape")) {
+                writer.setPageOrientation(QPageLayout::Landscape);
+            }
+        }
+
+        if (pageSetup.contains(QLatin1String("MarginTop")) &&
+            pageSetup.contains(QLatin1String("MarginBottom")) &&
+            pageSetup.contains(QLatin1String("MarginLeft")) &&
+            pageSetup.contains(QLatin1String("MarginRight"))) {
+            const int marginTop = pageSetup.value(QLatin1String("MarginTop")).toInt();
+            const int marginBottom = pageSetup.value(QLatin1String("MarginBottom")).toInt();
+            const int marginLeft = pageSetup.value(QLatin1String("MarginLeft")).toInt();
+            const int marginRight = pageSetup.value(QLatin1String("MarginRight")).toInt();
+            writer.setPageMargins(QMarginsF(marginLeft, marginTop, marginRight, marginBottom), QPageLayout::Millimeter);
+        }
+
+        // TODO num-copies, pages
+
+        writer.setPageSize(QPagedPaintDevice::A4);
+
+        painter.drawPixmap(QPoint(0,0), QPixmap(m_mainWindow->selectedFiles->text()));
+        painter.end();
+
+        // Send it back for printing
+        const QString parentWindowId = QLatin1String("x11:") + QString::number(winId());
+        QDBusUnixFileDescriptor descriptor(tempFile.handle());
+
+        QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
+                                                            QLatin1String("/org/freedesktop/portal/desktop"),
+                                                            QLatin1String("org.freedesktop.portal.Print"),
+                                                            QLatin1String("Print"));
+
+        message << parentWindowId << QLatin1String("Print dialog") << QVariant::fromValue<QDBusUnixFileDescriptor>(descriptor) << QVariantMap{{QLatin1String("token"), results.value(QLatin1String("token")).toUInt()}};
+
+        QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
+        QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pendingCall);
+        connect(watcher, &QDBusPendingCallWatcher::finished, [this] (QDBusPendingCallWatcher *watcher) {
+            QDBusPendingReply<QDBusObjectPath> reply = *watcher;
+            if (reply.isError()) {
+                qWarning() << "Couldn't get reply";
+                qWarning() << "Error: " << reply.error().message();
+            } else {
+                QDBusConnection::sessionBus().connect(QString(),
+                                                    reply.value().path(),
+                                                    QLatin1String("org.freedesktop.portal.Request"),
+                                                    QLatin1String("Response"),
+                                                    this,
+                                                    SLOT(gotPrintResponse(uint,QVariantMap)));
+            }
+        });
+    } else {
+        qWarning() << "Failed to print selected document";
+    }
+}
+
+void PortalTest::printDocument()
+{
+    const QString parentWindowId = QLatin1String("x11:") + QString::number(winId());
+
+    QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
+                                                          QLatin1String("/org/freedesktop/portal/desktop"),
+                                                          QLatin1String("org.freedesktop.portal.Print"),
+                                                          QLatin1String("PreparePrint"));
+    // TODO add some default configuration to verify it's read/parsed properly
+    message << parentWindowId << QLatin1String("Prepare print") << QVariantMap() << QVariantMap() << QVariantMap();
+
+    QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pendingCall);
+    connect(watcher, &QDBusPendingCallWatcher::finished, [this] (QDBusPendingCallWatcher *watcher) {
+        QDBusPendingReply<QDBusObjectPath> reply = *watcher;
+        if (reply.isError()) {
+            qWarning() << "Couldn't get reply";
+            qWarning() << "Error: " << reply.error().message();
+        } else {
+            QDBusConnection::sessionBus().connect(QString(),
+                                                  reply.value().path(),
+                                                  QLatin1String("org.freedesktop.portal.Request"),
+                                                  QLatin1String("Response"),
+                                                  this,
+                                                  SLOT(gotPreparePrintResponse(uint,QVariantMap)));
+        }
+    });
 }
 
 void PortalTest::saveFileRequested()

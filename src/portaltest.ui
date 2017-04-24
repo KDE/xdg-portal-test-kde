@@ -141,7 +141,7 @@
       </property>
      </widget>
     </item>
-    <item row="6" column="0" colspan="2">
+    <item row="8" column="0" colspan="2">
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -154,6 +154,30 @@
       </property>
      </spacer>
     </item>
+    <item row="7" column="0">
+     <widget class="QLabel" name="label_7">
+      <property name="text">
+       <string>Print:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="1">
+     <widget class="QPushButton" name="printButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>Print document...</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="1">
+     <widget class="QLabel" name="printWarning">
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+    </item>
    </layout>
    <zorder>label</zorder>
    <zorder>sandboxLabel</zorder>
@@ -165,6 +189,9 @@
    <zorder>label_5</zorder>
    <zorder>label_6</zorder>
    <zorder>notifyCloseButton</zorder>
+   <zorder>label_7</zorder>
+   <zorder>printButton</zorder>
+   <zorder>printWarning</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

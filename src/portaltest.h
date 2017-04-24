@@ -39,8 +39,11 @@ public:
     ~PortalTest();
 
 public Q_SLOTS:
+    void gotPrintResponse(uint response, const QVariantMap &results);
+    void gotPreparePrintResponse(uint response, const QVariantMap &results);
     void notificationActivated(uint action);
     void openFileRequested();
+    void printDocument();
     void saveFileRequested();
     void sendNotification();
 private:
