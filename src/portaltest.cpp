@@ -27,9 +27,11 @@
 #include <QDBusUnixFileDescriptor>
 #include <QFile>
 #include <QFileDialog>
+#include <QMenu>
 #include <QPainter>
 #include <QPdfWriter>
 #include <QStandardPaths>
+#include <QSystemTrayIcon>
 #include <QTemporaryFile>
 #include <QWindow>
 
@@ -47,6 +49,34 @@ PortalTest::PortalTest(QWidget *parent, Qt::WindowFlags f)
 
     m_mainWindow->sandboxLabel->setText(isRunningSandbox() ? QLatin1String("yes") : QLatin1String("no"));
     m_mainWindow->printWarning->setText(QLatin1String("Select an image in PNG format using FileChooser part!!"));
+
+    QMenu *menu = new QMenu(this);
+    menu->addAction(QIcon::fromTheme(QLatin1String("application-exit")), QLatin1String("Quit"), qApp, &QApplication::quit);
+
+    QSystemTrayIcon *trayIcon = new QSystemTrayIcon(QIcon::fromTheme(QLatin1String("kde")), this);
+    trayIcon->setContextMenu(menu);
+    trayIcon->show();
+
+    connect(trayIcon, &QSystemTrayIcon::activated, [this] (QSystemTrayIcon::ActivationReason reason) {
+        switch (reason) {
+            case QSystemTrayIcon::Unknown:
+                m_mainWindow->systrayLabel->setText(QLatin1String("Unknown reason"));
+                break;
+            case QSystemTrayIcon::Context:
+                m_mainWindow->systrayLabel->setText(QLatin1String("The context menu for the system tray entry was requested"));
+                break;
+            case QSystemTrayIcon::DoubleClick:
+                m_mainWindow->systrayLabel->setText(QLatin1String("The system tray entry was double clicked"));
+                break;
+            case QSystemTrayIcon::Trigger:
+                m_mainWindow->systrayLabel->setText(QLatin1String("The system tray entry was clicked"));
+                show();
+                break;
+            case QSystemTrayIcon::MiddleClick:
+                m_mainWindow->systrayLabel->setText(QLatin1String("The system tray entry was clicked with the middle mouse button"));
+                break;
+        }
+    });
 
     connect(m_mainWindow->openFile, &QPushButton::clicked, this, &PortalTest::openFileRequested);
     connect(m_mainWindow->saveFile, &QPushButton::clicked, this, &PortalTest::saveFileRequested);

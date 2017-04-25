@@ -73,7 +73,7 @@
     <item row="2" column="0">
      <widget class="QLabel" name="label_5">
       <property name="text">
-       <string>KUrlRequester</string>
+       <string>KUrlRequester:</string>
       </property>
      </widget>
     </item>
@@ -109,7 +109,7 @@
     <item row="4" column="0">
      <widget class="QLabel" name="label_6">
       <property name="text">
-       <string>KNotifications</string>
+       <string>KNotifications:</string>
       </property>
      </widget>
     </item>
@@ -141,7 +141,7 @@
       </property>
      </widget>
     </item>
-    <item row="8" column="0" colspan="2">
+    <item row="9" column="0" colspan="2">
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -178,6 +178,20 @@
       </property>
      </widget>
     </item>
+    <item row="8" column="0">
+     <widget class="QLabel" name="label_8">
+      <property name="text">
+       <string>QSystemTrayIcon:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="1">
+     <widget class="QLabel" name="systrayLabel">
+      <property name="text">
+       <string>Click on the system tray icon. Used to test platform integration.</string>
+      </property>
+     </widget>
+    </item>
    </layout>
    <zorder>label</zorder>
    <zorder>sandboxLabel</zorder>
@@ -192,6 +206,8 @@
    <zorder>label_7</zorder>
    <zorder>printButton</zorder>
    <zorder>printWarning</zorder>
+   <zorder>label_8</zorder>
+   <zorder>systrayLabel</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
