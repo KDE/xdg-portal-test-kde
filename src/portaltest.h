@@ -21,8 +21,10 @@
 #ifndef PORTAL_TEST_KDE_H
 #define PORTAL_TEST_KDE_H
 
-#include <QMainWindow>
+#include <QDBusObjectPath>
+#include <QFlags>
 #include <QLoggingCategory>
+#include <QMainWindow>
 
 namespace Ui
 {
@@ -41,6 +43,8 @@ public:
 public Q_SLOTS:
     void gotPrintResponse(uint response, const QVariantMap &results);
     void gotPreparePrintResponse(uint response, const QVariantMap &results);
+    void inhibitRequested();
+    void uninhibitRequested();
     void notificationActivated(uint action);
     void openFileRequested();
     void printDocument();
@@ -49,6 +53,7 @@ public Q_SLOTS:
 private:
     bool isRunningSandbox();
 
+    QDBusObjectPath m_inhibitionRequest;
     Ui::PortalTest * m_mainWindow;
 };
 

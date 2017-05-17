@@ -78,6 +78,8 @@ PortalTest::PortalTest(QWidget *parent, Qt::WindowFlags f)
         }
     });
 
+    connect(m_mainWindow->inhibit, &QPushButton::clicked, this, &PortalTest::inhibitRequested);
+    connect(m_mainWindow->uninhibit, &QPushButton::clicked, this, &PortalTest::uninhibitRequested);
     connect(m_mainWindow->openFile, &QPushButton::clicked, this, &PortalTest::openFileRequested);
     connect(m_mainWindow->saveFile, &QPushButton::clicked, this, &PortalTest::saveFileRequested);
     connect(m_mainWindow->notifyButton, &QPushButton::clicked, this, &PortalTest::sendNotification);
@@ -203,6 +205,47 @@ void PortalTest::gotPreparePrintResponse(uint response, const QVariantMap &resul
     } else {
         qWarning() << "Failed to print selected document";
     }
+}
+
+void PortalTest::inhibitRequested()
+{
+    const QString parentWindowId = QLatin1String("x11:") + QString::number(winId());
+
+    QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
+                                                          QLatin1String("/org/freedesktop/portal/desktop"),
+                                                          QLatin1String("org.freedesktop.portal.Inhibit"),
+                                                          QLatin1String("Inhibit"));
+    // flags: 1 (logout) & 2 (user switch) & 4 (suspend) & 8 (idle)
+    message << parentWindowId << (uint)8 << QVariantMap({{QLatin1String("reason"), QLatin1String("Testing inhibition")}});
+
+    QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pendingCall);
+    connect(watcher, &QDBusPendingCallWatcher::finished, [this] (QDBusPendingCallWatcher *watcher) {
+        QDBusPendingReply<QDBusObjectPath> reply = *watcher;
+        if (reply.isError()) {
+            qWarning() << "Couldn't get reply";
+            qWarning() << "Error: " << reply.error().message();
+        } else {
+            qWarning() << reply.value().path();
+            m_mainWindow->inhibitLabel->setText(QLatin1String("Inhibited"));
+            m_mainWindow->inhibit->setEnabled(false);
+            m_mainWindow->uninhibit->setEnabled(true);
+            m_inhibitionRequest = reply.value();
+        }
+    });
+}
+
+void PortalTest::uninhibitRequested()
+{
+    QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
+                                                          m_inhibitionRequest.path(),
+                                                          QLatin1String("org.freedesktop.portal.Request"),
+                                                          QLatin1String("Close"));
+    QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
+    m_mainWindow->inhibitLabel->setText(QLatin1String("Not inhibited"));
+    m_mainWindow->inhibit->setEnabled(true);
+    m_mainWindow->uninhibit->setEnabled(false);
+    m_inhibitionRequest = QDBusObjectPath();
 }
 
 void PortalTest::printDocument()
