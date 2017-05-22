@@ -84,6 +84,7 @@ PortalTest::PortalTest(QWidget *parent, Qt::WindowFlags f)
     connect(m_mainWindow->saveFile, &QPushButton::clicked, this, &PortalTest::saveFileRequested);
     connect(m_mainWindow->notifyButton, &QPushButton::clicked, this, &PortalTest::sendNotification);
     connect(m_mainWindow->printButton, &QPushButton::clicked, this, &PortalTest::printDocument);
+    connect(m_mainWindow->requestDeviceAccess, &QPushButton::clicked, this, &PortalTest::requestDeviceAccess);
 }
 
 PortalTest::~PortalTest()
@@ -273,6 +274,32 @@ void PortalTest::printDocument()
                                                   QLatin1String("Response"),
                                                   this,
                                                   SLOT(gotPreparePrintResponse(uint,QVariantMap)));
+        }
+    });
+}
+
+void PortalTest::requestDeviceAccess()
+{
+    qWarning() << "Request device access";
+    const QString device = m_mainWindow->deviceCombobox->currentIndex() == 0 ? QLatin1String("microphone") :
+                                                                               m_mainWindow->deviceCombobox->currentIndex() == 1 ? QLatin1String("speakers") : QLatin1String("camera");
+
+
+    QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
+                                                          QLatin1String("/org/freedesktop/portal/desktop"),
+                                                          QLatin1String("org.freedesktop.portal.Device"),
+                                                          QLatin1String("AccessDevice"));
+    message << (uint)QApplication::applicationPid() << QStringList {device} << QVariantMap();
+
+    QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pendingCall);
+    connect(watcher, &QDBusPendingCallWatcher::finished, [this] (QDBusPendingCallWatcher *watcher) {
+        QDBusPendingReply<QDBusObjectPath> reply = *watcher;
+        if (reply.isError()) {
+            qWarning() << "Couldn't get reply";
+            qWarning() << "Error: " << reply.error().message();
+        } else {
+            qWarning() << reply.value().path();
         }
     });
 }

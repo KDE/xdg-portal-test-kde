@@ -48,6 +48,7 @@ public Q_SLOTS:
     void notificationActivated(uint action);
     void openFileRequested();
     void printDocument();
+    void requestDeviceAccess();
     void saveFileRequested();
     void sendNotification();
 private:

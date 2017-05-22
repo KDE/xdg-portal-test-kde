@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>640</width>
-    <height>480</height>
+    <height>482</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -103,6 +103,26 @@
       </property>
       <property name="textInteractionFlags">
        <set>Qt::TextBrowserInteraction</set>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="label_10">
+      <property name="text">
+       <string>Email:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QLabel" name="label_11">
+      <property name="text">
+       <string>&lt;a href=&quot;mailto:john@doe.com?subject=Hello&amp;body=Message&quot;&gt;john@doe.com&lt;/a&gt;</string>
+      </property>
+      <property name="textFormat">
+       <enum>Qt::RichText</enum>
+      </property>
+      <property name="openExternalLinks">
+       <bool>true</bool>
       </property>
      </widget>
     </item>
@@ -207,7 +227,54 @@
       </item>
      </layout>
     </item>
-    <item row="12" column="0" colspan="2">
+    <item row="11" column="1">
+     <widget class="QLabel" name="inhibitLabel">
+      <property name="text">
+       <string>Not inhibited</string>
+      </property>
+     </widget>
+    </item>
+    <item row="12" column="0">
+     <widget class="QLabel" name="label_12">
+      <property name="text">
+       <string>Device access:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="12" column="1">
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <widget class="QComboBox" name="deviceCombobox">
+        <property name="sizeAdjustPolicy">
+         <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
+        </property>
+        <item>
+         <property name="text">
+          <string>Microphone</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Speakers</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Camera</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="requestDeviceAccess">
+        <property name="text">
+         <string>Request access</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="13" column="0" colspan="2">
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -219,33 +286,6 @@
        </size>
       </property>
      </spacer>
-    </item>
-    <item row="11" column="1">
-     <widget class="QLabel" name="inhibitLabel">
-      <property name="text">
-       <string>Not inhibited</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0">
-     <widget class="QLabel" name="label_10">
-      <property name="text">
-       <string>Email:</string>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="1">
-     <widget class="QLabel" name="label_11">
-      <property name="text">
-       <string>&lt;a href=&quot;mailto:john@doe.com?subject=Hello&amp;body=Message&quot;&gt;john@doe.com&lt;/a&gt;</string>
-      </property>
-      <property name="textFormat">
-       <enum>Qt::RichText</enum>
-      </property>
-      <property name="openExternalLinks">
-       <bool>true</bool>
-      </property>
-     </widget>
     </item>
    </layout>
    <zorder>label</zorder>
@@ -267,6 +307,9 @@
    <zorder>inhibitLabel</zorder>
    <zorder>label_10</zorder>
    <zorder>label_11</zorder>
+   <zorder>label_12</zorder>
+   <zorder>deviceCombobox</zorder>
+   <zorder>requestDeviceAccess</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
