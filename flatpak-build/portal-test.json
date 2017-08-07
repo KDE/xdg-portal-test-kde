@@ -28,7 +28,7 @@
             "sources": [
                 {
                     "type": "git",
-                    "url": "file:///home/jgrulich/development/projects/flatpak/flatpak-portal-test-kde/"
+                    "url": "https://github.com/grulja/flatpak-portal-test-kde.git"
                 }
             ]
         }
