@@ -1,7 +1,7 @@
 {
-    "app-id": "org.kde.PortalTest",
+    "app-id": "org.kde.portal-test-kde",
     "runtime": "org.kde.Platform",
-    "runtime-version": "master",
+    "runtime-version": "5.9",
     "sdk": "org.kde.Sdk",
     "command": "portal-test-kde",
     "finish-args": [
@@ -10,8 +10,9 @@
         "--socket=wayland",
         "--filesystem=host",
         "--device=dri",
+        "--env=QT_LOGGING_RULES=qt.qpa.qflatpakplatform*.debug=true",
         "--env=QT_QPA_PLATFORM=flatpak",
-        "--env=QT_LOGGING_RULES=qt.qpa.qflatpak*.debug=true"
+        "--talk-name=org.kde.StatusNotifierWatcher"
     ],
     "build-options" : {
         "cflags": "-O2 -g",
@@ -27,7 +28,7 @@
             "sources": [
                 {
                     "type": "git",
-                    "url": "https://github.com/grulja/flatpak-portal-test-kde.git"
+                    "url": "file:///home/jgrulich/development/projects/flatpak/flatpak-portal-test-kde/"
                 }
             ]
         }

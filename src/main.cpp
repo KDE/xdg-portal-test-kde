@@ -26,6 +26,8 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    a.setOrganizationDomain(QLatin1String("kde.org"));
+
     PortalTest *portalTest = new PortalTest(0);
     portalTest->show();
 
