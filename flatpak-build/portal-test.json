@@ -10,8 +10,6 @@
         "--socket=wayland",
         "--filesystem=host",
         "--device=dri",
-        "--env=QT_LOGGING_RULES=qt.qpa.qflatpakplatform*.debug=true",
-        "--env=QT_QPA_PLATFORM=flatpak",
         "--talk-name=org.kde.StatusNotifierWatcher"
     ],
     "build-options" : {
@@ -28,7 +26,7 @@
             "sources": [
                 {
                     "type": "git",
-                    "url": "https://github.com/grulja/flatpak-portal-test-kde.git"
+                    "url": "https://anongit.kde.org/xdg-portal-test-kde.git"
                 }
             ]
         }
