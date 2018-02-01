@@ -16,6 +16,10 @@ include(ECMPackageConfigHelpers)
 include(ECMOptionalAddSubdirectory)
 include(FeatureSummary)
 
+include(FindPkgConfig)
+
+pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0)
+
 find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
     Core
     DBus

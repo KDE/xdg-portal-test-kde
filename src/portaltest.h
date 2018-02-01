@@ -37,10 +37,19 @@ class PortalTest : public QMainWindow
 {
     Q_OBJECT
 public:
+    typedef struct {
+        uint node_id;
+        QVariantMap map;
+    } Stream;
+    typedef QList<Stream> Streams;
+
     PortalTest(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
     ~PortalTest();
 
 public Q_SLOTS:
+    void gotCreateSessionResponse(uint response, const QVariantMap &results);
+    void gotSelectSourcesResponse(uint response, const QVariantMap &results);
+    void gotStartResponse(uint response, const QVariantMap &results);
     void gotPrintResponse(uint response, const QVariantMap &results);
     void gotPreparePrintResponse(uint response, const QVariantMap &results);
     void inhibitRequested();
@@ -51,11 +60,17 @@ public Q_SLOTS:
     void requestDeviceAccess();
     void saveFileRequested();
     void sendNotification();
+    void requestScreenSharing();
 private:
     bool isRunningSandbox();
+    QString getSessionToken();
+    QString getRequestToken();
 
     QDBusObjectPath m_inhibitionRequest;
+    QString m_session;
     Ui::PortalTest * m_mainWindow;
+    uint m_sessionTokenCounter;
+    uint m_requestTokenCounter;
 };
 
 #endif // PORTAL_TEST_KDE_H

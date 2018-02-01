@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>640</width>
-    <height>482</height>
+    <width>622</width>
+    <height>510</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -274,15 +274,47 @@
       </item>
      </layout>
     </item>
-    <item row="13" column="0" colspan="2">
+    <item row="13" column="0">
+     <widget class="QLabel" name="label_13">
+      <property name="text">
+       <string>Screen sharing:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="13" column="1">
+     <layout class="QHBoxLayout" name="horizontalLayout_5">
+      <item>
+       <widget class="QComboBox" name="screenShareCombobox">
+        <item>
+         <property name="text">
+          <string>Monitor</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Window</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="screenShareButton">
+        <property name="text">
+         <string>Request</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="14" column="1">
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
       <property name="sizeHint" stdset="0">
        <size>
-        <width>28</width>
-        <height>382</height>
+        <width>25</width>
+        <height>13</height>
        </size>
       </property>
      </spacer>
@@ -308,8 +340,7 @@
    <zorder>label_10</zorder>
    <zorder>label_11</zorder>
    <zorder>label_12</zorder>
-   <zorder>deviceCombobox</zorder>
-   <zorder>requestDeviceAccess</zorder>
+   <zorder>label_13</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
