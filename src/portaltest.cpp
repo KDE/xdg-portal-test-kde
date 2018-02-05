@@ -415,7 +415,7 @@ void PortalTest::gotCreateSessionResponse(uint response, const QVariantMap &resu
 
     message << QVariant::fromValue(QDBusObjectPath(m_session))
             << QVariantMap { { QLatin1String("multiple"), false},
-                             { QLatin1String("type"), m_mainWindow->screenShareCombobox->currentIndex() + 1},
+                             { QLatin1String("types"), (uint)m_mainWindow->screenShareCombobox->currentIndex() + 1},
                              { QLatin1String("handle_token"), getRequestToken() } };
 
     QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
