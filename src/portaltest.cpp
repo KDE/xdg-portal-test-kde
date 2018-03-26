@@ -72,6 +72,11 @@ PortalTest::PortalTest(QWidget *parent, Qt::WindowFlags f)
 {
     QLoggingCategory::setFilterRules(QStringLiteral("portal-test-kde.debug = true"));
 
+    qWarning() << QStandardPaths::writableLocation(QStandardPaths::TempLocation);
+    qWarning() << QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation);
+    qWarning() << QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    qWarning() << QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation);
+
     m_mainWindow->setupUi(this);
 
     m_mainWindow->sandboxLabel->setText(isRunningSandbox() ? QLatin1String("yes") : QLatin1String("no"));
@@ -449,7 +454,7 @@ void PortalTest::gotSelectSourcesResponse(uint response, const QVariantMap &resu
                                                           QLatin1String("Start"));
 
     message << QVariant::fromValue(QDBusObjectPath(m_session))
-            << QString() // parent_window
+            << QString()
             << QVariantMap { { QLatin1String("handle_token"), getRequestToken() } };
 
     QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
@@ -485,8 +490,10 @@ void PortalTest::gotStartResponse(uint response, const QVariantMap &results)
 
         message << QVariant::fromValue(QDBusObjectPath(m_session)) << QVariantMap();
 
+        qWarning() << "Call open pipewire remote";
         QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
         pendingCall.waitForFinished();
+        qWarning() << "Got response";
         QDBusPendingReply<QDBusUnixFileDescriptor> reply = pendingCall.reply();
         if (reply.isError()) {
             qWarning() << "Failed to get fd for node_id " << stream.node_id;
