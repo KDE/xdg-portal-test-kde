@@ -80,7 +80,7 @@ PortalTest::PortalTest(QWidget *parent, Qt::WindowFlags f)
     m_mainWindow->setupUi(this);
 
     m_mainWindow->sandboxLabel->setText(isRunningSandbox() ? QLatin1String("yes") : QLatin1String("no"));
-    m_mainWindow->printWarning->setText(QLatin1String("Select an image in PNG format using FileChooser part!!"));
+    m_mainWindow->printWarning->setText(QLatin1String("Select an image in JPG format using FileChooser part!!"));
 
     QMenu *menu = new QMenu(this);
     menu->addAction(QIcon::fromTheme(QLatin1String("application-exit")), QLatin1String("Quit"), qApp, &QApplication::quit);
@@ -136,7 +136,7 @@ void PortalTest::openFileRequested()
 {
     QFileDialog *fileDialog = new QFileDialog(this);
     fileDialog->setFileMode(QFileDialog::ExistingFiles);
-    fileDialog->setMimeTypeFilters(QStringList { QLatin1String("text/plain"), QLatin1String("image/png") } );
+    fileDialog->setMimeTypeFilters(QStringList { QLatin1String("text/plain"), QLatin1String("image/jpeg") } );
     fileDialog->setLabelText(QFileDialog::Accept, QLatin1String("Open (portal)"));
     fileDialog->setModal(false);
     fileDialog->setWindowTitle(QLatin1String("Flatpak test - open dialog"));
@@ -144,7 +144,7 @@ void PortalTest::openFileRequested()
     if (fileDialog->exec() == QDialog::Accepted) {
         if (!fileDialog->selectedFiles().isEmpty()) {
             m_mainWindow->selectedFiles->setText(fileDialog->selectedFiles().join(QLatin1String(", ")));
-            if (fileDialog->selectedFiles().first().endsWith(QLatin1String(".png"))) {
+            if (fileDialog->selectedFiles().first().endsWith(QLatin1String(".jpg"))) {
                 m_mainWindow->printButton->setEnabled(true);
                 m_mainWindow->printWarning->setVisible(false);
             } else {
@@ -220,7 +220,7 @@ void PortalTest::gotPreparePrintResponse(uint response, const QVariantMap &resul
                                                             QLatin1String("org.freedesktop.portal.Print"),
                                                             QLatin1String("Print"));
 
-        message << parentWindowId << QLatin1String("Print dialog") << QVariant::fromValue<QDBusUnixFileDescriptor>(descriptor) << QVariantMap{{QLatin1String("token"), results.value(QLatin1String("token")).toUInt()}};
+        message << parentWindowId << QLatin1String("Print dialog") << QVariant::fromValue<QDBusUnixFileDescriptor>(descriptor) << QVariantMap{{QLatin1String("token"), results.value(QLatin1String("token")).toUInt()}, { QLatin1String("handle_token"), getRequestToken() }};
 
         QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
         QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pendingCall);
@@ -293,7 +293,7 @@ void PortalTest::printDocument()
                                                           QLatin1String("org.freedesktop.portal.Print"),
                                                           QLatin1String("PreparePrint"));
     // TODO add some default configuration to verify it's read/parsed properly
-    message << parentWindowId << QLatin1String("Prepare print") << QVariantMap() << QVariantMap() << QVariantMap();
+    message << parentWindowId << QLatin1String("Prepare print") << QVariantMap() << QVariantMap() << QVariantMap{ {QLatin1String("handle_token"), getRequestToken()} };
 
     QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pendingCall);
