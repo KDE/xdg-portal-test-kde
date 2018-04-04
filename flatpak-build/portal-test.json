@@ -26,7 +26,7 @@
             "sources": [
                 {
                     "type": "git",
-                    "url": "file:///home/jgrulich/development/projects/flatpak/xdg-portal-test-kde/"
+                    "url": "https://anongit.kde.org/xdg-portal-test-kde.git"
                 }
             ]
         }
