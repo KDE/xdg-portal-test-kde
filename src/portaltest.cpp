@@ -25,6 +25,7 @@
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 #include <QDBusUnixFileDescriptor>
+#include <QDesktopServices>
 #include <QFile>
 #include <QFileDialog>
 #include <QMenu>
@@ -114,6 +115,10 @@ PortalTest::PortalTest(QWidget *parent, Qt::WindowFlags f)
     connect(m_mainWindow->requestDeviceAccess, &QPushButton::clicked, this, &PortalTest::requestDeviceAccess);
     connect(m_mainWindow->screenShareButton, &QPushButton::clicked, this, &PortalTest::requestScreenSharing);
 
+    connect(m_mainWindow->openFileButton, &QPushButton::clicked, this, [this] () {
+        QDesktopServices::openUrl(QUrl::fromLocalFile(m_mainWindow->selectedFiles->text().split(",").first()).adjusted(QUrl::RemoveFilename));
+    });
+
     gst_init(nullptr, nullptr);
 }
 
@@ -147,6 +152,7 @@ void PortalTest::openFileRequested()
                 m_mainWindow->printWarning->setVisible(true);
             }
         }
+        m_mainWindow->openFileButton->setEnabled(true);
         fileDialog->deleteLater();
     }
 }

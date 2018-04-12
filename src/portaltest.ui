@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>622</width>
-    <height>510</height>
+    <height>536</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -80,7 +80,7 @@
     <item row="2" column="1">
      <widget class="KUrlRequester" name="kurlrequester"/>
     </item>
-    <item row="3" column="0">
+    <item row="5" column="0">
      <widget class="QLabel" name="label_3">
       <property name="text">
        <string>Link:</string>
@@ -90,7 +90,7 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="1">
+    <item row="5" column="1">
      <widget class="QLabel" name="label_4">
       <property name="text">
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;http://kde.org/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#508ed8;&quot;&gt;KDE&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -106,14 +106,14 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="0">
+    <item row="6" column="0">
      <widget class="QLabel" name="label_10">
       <property name="text">
        <string>Email:</string>
       </property>
      </widget>
     </item>
-    <item row="4" column="1">
+    <item row="6" column="1">
      <widget class="QLabel" name="label_11">
       <property name="text">
        <string>&lt;a href=&quot;mailto:john@doe.com?subject=Hello&amp;body=Message&quot;&gt;john@doe.com&lt;/a&gt;</string>
@@ -126,14 +126,14 @@
       </property>
      </widget>
     </item>
-    <item row="5" column="0">
+    <item row="7" column="0">
      <widget class="QLabel" name="label_6">
       <property name="text">
        <string>KNotifications:</string>
       </property>
      </widget>
     </item>
-    <item row="5" column="1">
+    <item row="7" column="1">
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
        <widget class="QPushButton" name="notifyButton">
@@ -151,7 +151,7 @@
       </item>
      </layout>
     </item>
-    <item row="6" column="1">
+    <item row="8" column="1">
      <widget class="QPushButton" name="notifyCloseButton">
       <property name="enabled">
        <bool>false</bool>
@@ -161,21 +161,21 @@
       </property>
      </widget>
     </item>
-    <item row="7" column="1">
+    <item row="9" column="1">
      <widget class="QLabel" name="printWarning">
       <property name="text">
        <string/>
       </property>
      </widget>
     </item>
-    <item row="8" column="0">
+    <item row="10" column="0">
      <widget class="QLabel" name="label_7">
       <property name="text">
        <string>Print:</string>
       </property>
      </widget>
     </item>
-    <item row="8" column="1">
+    <item row="10" column="1">
      <widget class="QPushButton" name="printButton">
       <property name="enabled">
        <bool>false</bool>
@@ -185,28 +185,28 @@
       </property>
      </widget>
     </item>
-    <item row="9" column="0">
+    <item row="11" column="0">
      <widget class="QLabel" name="label_8">
       <property name="text">
        <string>QSystemTrayIcon:</string>
       </property>
      </widget>
     </item>
-    <item row="9" column="1">
+    <item row="11" column="1">
      <widget class="QLabel" name="systrayLabel">
       <property name="text">
        <string>Click on the system tray icon. Used to test platform integration.</string>
       </property>
      </widget>
     </item>
-    <item row="10" column="0">
+    <item row="12" column="0">
      <widget class="QLabel" name="label_9">
       <property name="text">
        <string>Inhibit:</string>
       </property>
      </widget>
     </item>
-    <item row="10" column="1">
+    <item row="12" column="1">
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
        <widget class="QPushButton" name="inhibit">
@@ -227,21 +227,21 @@
       </item>
      </layout>
     </item>
-    <item row="11" column="1">
+    <item row="13" column="1">
      <widget class="QLabel" name="inhibitLabel">
       <property name="text">
        <string>Not inhibited</string>
       </property>
      </widget>
     </item>
-    <item row="12" column="0">
+    <item row="14" column="0">
      <widget class="QLabel" name="label_12">
       <property name="text">
        <string>Device access:</string>
       </property>
      </widget>
     </item>
-    <item row="12" column="1">
+    <item row="14" column="1">
      <layout class="QHBoxLayout" name="horizontalLayout_4">
       <item>
        <widget class="QComboBox" name="deviceCombobox">
@@ -274,14 +274,14 @@
       </item>
      </layout>
     </item>
-    <item row="13" column="0">
+    <item row="15" column="0">
      <widget class="QLabel" name="label_13">
       <property name="text">
        <string>Screen sharing:</string>
       </property>
      </widget>
     </item>
-    <item row="13" column="1">
+    <item row="15" column="1">
      <layout class="QHBoxLayout" name="horizontalLayout_5">
       <item>
        <widget class="QComboBox" name="screenShareCombobox">
@@ -306,7 +306,7 @@
       </item>
      </layout>
     </item>
-    <item row="14" column="1">
+    <item row="16" column="1">
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -318,6 +318,16 @@
        </size>
       </property>
      </spacer>
+    </item>
+    <item row="4" column="1">
+     <widget class="QPushButton" name="openFileButton">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>Open selected file</string>
+      </property>
+     </widget>
     </item>
    </layout>
    <zorder>label</zorder>
@@ -341,6 +351,7 @@
    <zorder>label_11</zorder>
    <zorder>label_12</zorder>
    <zorder>label_13</zorder>
+   <zorder>openFileButton</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
