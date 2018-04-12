@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>622</width>
-    <height>536</height>
+    <width>638</width>
+    <height>575</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -306,7 +306,7 @@
       </item>
      </layout>
     </item>
-    <item row="16" column="1">
+    <item row="17" column="1">
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -326,6 +326,20 @@
       </property>
       <property name="text">
        <string>Open selected file</string>
+      </property>
+     </widget>
+    </item>
+    <item row="16" column="0">
+     <widget class="QLabel" name="label_14">
+      <property name="text">
+       <string>Screenshot:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="16" column="1">
+     <widget class="QPushButton" name="screenshotButton">
+      <property name="text">
+       <string>Take screenshot</string>
       </property>
      </widget>
     </item>
@@ -352,6 +366,8 @@
    <zorder>label_12</zorder>
    <zorder>label_13</zorder>
    <zorder>openFileButton</zorder>
+   <zorder>label_14</zorder>
+   <zorder>screenshotButton</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

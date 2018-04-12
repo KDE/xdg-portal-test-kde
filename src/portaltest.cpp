@@ -114,6 +114,7 @@ PortalTest::PortalTest(QWidget *parent, Qt::WindowFlags f)
     connect(m_mainWindow->printButton, &QPushButton::clicked, this, &PortalTest::printDocument);
     connect(m_mainWindow->requestDeviceAccess, &QPushButton::clicked, this, &PortalTest::requestDeviceAccess);
     connect(m_mainWindow->screenShareButton, &QPushButton::clicked, this, &PortalTest::requestScreenSharing);
+    connect(m_mainWindow->screenshotButton, &QPushButton::clicked, this, &PortalTest::requestScreenshot);
 
     connect(m_mainWindow->openFileButton, &QPushButton::clicked, this, [this] () {
         QDesktopServices::openUrl(QUrl::fromLocalFile(m_mainWindow->selectedFiles->text().split(",").first()).adjusted(QUrl::RemoveFilename));
@@ -405,6 +406,33 @@ void PortalTest::requestScreenSharing()
     });
 }
 
+void PortalTest::requestScreenshot()
+{
+    QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
+                                                          QLatin1String("/org/freedesktop/portal/desktop"),
+                                                          QLatin1String("org.freedesktop.portal.Screenshot"),
+                                                          QLatin1String("Screenshot"));
+    // TODO add some default configuration to verify it's read/parsed properly
+    message << QLatin1String("x11:") << QVariantMap{{QLatin1String("interactive"), true}, {QLatin1String("handle_token"), getRequestToken()}};
+
+    QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pendingCall);
+    connect(watcher, &QDBusPendingCallWatcher::finished, [this] (QDBusPendingCallWatcher *watcher) {
+        QDBusPendingReply<QDBusObjectPath> reply = *watcher;
+        if (reply.isError()) {
+            qWarning() << "Couldn't get reply";
+            qWarning() << "Error: " << reply.error().message();
+        } else {
+            QDBusConnection::sessionBus().connect(QString(),
+                                                  reply.value().path(),
+                                                  QLatin1String("org.freedesktop.portal.Request"),
+                                                  QLatin1String("Response"),
+                                                  this,
+                                                  SLOT(gotScreenshotResponse(uint,QVariantMap)));
+        }
+    });
+}
+
 void PortalTest::gotCreateSessionResponse(uint response, const QVariantMap &results)
 {
     if (response != 0) {
@@ -501,6 +529,18 @@ void PortalTest::gotStartResponse(uint response, const QVariantMap &results)
         QString gstLaunch = QString("pipewiresrc fd=%1 path=%2 ! videoconvert ! xvimagesink").arg(reply.value().fileDescriptor()).arg(stream.node_id);
         GstElement *element = gst_parse_launch(gstLaunch.toUtf8(), nullptr);
         gst_element_set_state(element, GST_STATE_PLAYING);
+    }
+}
+
+void PortalTest::gotScreenshotResponse(uint response, const QVariantMap& results)
+{
+    qWarning() << "Screenshot response: " << response << results;
+    if (!response) {
+        if (results.contains(QLatin1String("uri"))) {
+            QDesktopServices::openUrl(QUrl::fromLocalFile(results.value(QLatin1String("uri")).toString()));
+        }
+    } else {
+        qWarning() << "Failed to take screenshot";
     }
 }
 
