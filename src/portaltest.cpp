@@ -109,7 +109,10 @@ PortalTest::PortalTest(QWidget *parent, Qt::WindowFlags f)
     connect(m_mainWindow->inhibit, &QPushButton::clicked, this, &PortalTest::inhibitRequested);
     connect(m_mainWindow->uninhibit, &QPushButton::clicked, this, &PortalTest::uninhibitRequested);
     connect(m_mainWindow->openFile, &QPushButton::clicked, this, &PortalTest::openFileRequested);
+    connect(m_mainWindow->openFileModal, &QPushButton::clicked, this, &PortalTest::openFileModalRequested);
     connect(m_mainWindow->saveFile, &QPushButton::clicked, this, &PortalTest::saveFileRequested);
+    connect(m_mainWindow->openDir, &QPushButton::clicked, this, &PortalTest::openDirRequested);
+    connect(m_mainWindow->openDirModal, &QPushButton::clicked, this, &PortalTest::openDirModalRequested);
     connect(m_mainWindow->notifyButton, &QPushButton::clicked, this, &PortalTest::sendNotification);
     connect(m_mainWindow->printButton, &QPushButton::clicked, this, &PortalTest::printDocument);
     connect(m_mainWindow->requestDeviceAccess, &QPushButton::clicked, this, &PortalTest::requestDeviceAccess);
@@ -117,7 +120,7 @@ PortalTest::PortalTest(QWidget *parent, Qt::WindowFlags f)
     connect(m_mainWindow->screenshotButton, &QPushButton::clicked, this, &PortalTest::requestScreenshot);
 
     connect(m_mainWindow->openFileButton, &QPushButton::clicked, this, [this] () {
-        QDesktopServices::openUrl(QUrl::fromLocalFile(m_mainWindow->selectedFiles->text().split(",").first()).adjusted(QUrl::RemoveFilename));
+        QDesktopServices::openUrl(QUrl::fromLocalFile(m_mainWindow->selectedFiles->text().split(",").first()));
     });
 
     gst_init(nullptr, nullptr);
@@ -137,7 +140,31 @@ void PortalTest::openFileRequested()
 {
     QFileDialog *fileDialog = new QFileDialog(this);
     fileDialog->setFileMode(QFileDialog::ExistingFiles);
-    fileDialog->setMimeTypeFilters(QStringList { QLatin1String("text/plain"), QLatin1String("image/jpeg") } );
+    fileDialog->setLabelText(QFileDialog::Accept, QLatin1String("Open (portal)"));
+    fileDialog->setModal(false);
+    fileDialog->setWindowTitle(QLatin1String("Flatpak test - open dialog"));
+
+    connect(fileDialog, &QFileDialog::accepted, this, [this, fileDialog] () {
+        if (!fileDialog->selectedFiles().isEmpty()) {
+            m_mainWindow->selectedFiles->setText(fileDialog->selectedFiles().join(QLatin1String(", ")));
+            if (fileDialog->selectedFiles().first().endsWith(QLatin1String(".jpg"))) {
+                m_mainWindow->printButton->setEnabled(true);
+                m_mainWindow->printWarning->setVisible(false);
+            } else {
+                m_mainWindow->printButton->setEnabled(false);
+                m_mainWindow->printWarning->setVisible(true);
+            }
+        }
+        m_mainWindow->openFileButton->setEnabled(true);
+        fileDialog->deleteLater();
+    });
+    fileDialog->show();
+}
+
+void PortalTest::openFileModalRequested()
+{
+    QFileDialog *fileDialog = new QFileDialog(this);
+    fileDialog->setFileMode(QFileDialog::ExistingFiles);
     fileDialog->setLabelText(QFileDialog::Accept, QLatin1String("Open (portal)"));
     fileDialog->setModal(false);
     fileDialog->setWindowTitle(QLatin1String("Flatpak test - open dialog"));
@@ -154,6 +181,35 @@ void PortalTest::openFileRequested()
             }
         }
         m_mainWindow->openFileButton->setEnabled(true);
+        fileDialog->deleteLater();
+    }
+}
+
+void PortalTest::openDirRequested()
+{
+    QFileDialog *fileDialog = new QFileDialog(this);
+    fileDialog->setFileMode(QFileDialog::Directory);
+    fileDialog->setLabelText(QFileDialog::Accept, QLatin1String("Open (portal)"));
+    fileDialog->setModal(false);
+    fileDialog->setWindowTitle(QLatin1String("Flatpak test - open directory dialog"));
+
+    connect(fileDialog, &QFileDialog::accepted, this, [this, fileDialog] () {
+        m_mainWindow->selectedDir->setText(fileDialog->selectedFiles().join(QLatin1String(", ")));
+        fileDialog->deleteLater();
+    });
+    fileDialog->show();
+}
+
+void PortalTest::openDirModalRequested()
+{
+    QFileDialog *fileDialog = new QFileDialog(this);
+    fileDialog->setFileMode(QFileDialog::Directory);
+    fileDialog->setLabelText(QFileDialog::Accept, QLatin1String("Open (portal)"));
+    fileDialog->setModal(false);
+    fileDialog->setWindowTitle(QLatin1String("Flatpak test - open directory dialog"));
+
+    if (fileDialog->exec() == QDialog::Accepted) {
+        m_mainWindow->selectedDir->setText(fileDialog->selectedFiles().join(QLatin1String(", ")));
         fileDialog->deleteLater();
     }
 }

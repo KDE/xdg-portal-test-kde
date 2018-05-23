@@ -57,6 +57,9 @@ public Q_SLOTS:
     void uninhibitRequested();
     void notificationActivated(uint action);
     void openFileRequested();
+    void openFileModalRequested();
+    void openDirRequested();
+    void openDirModalRequested();
     void printDocument();
     void requestDeviceAccess();
     void saveFileRequested();
