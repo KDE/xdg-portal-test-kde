@@ -18,6 +18,8 @@ include(FeatureSummary)
 
 include(FindPkgConfig)
 
+find_package(GLIB2 REQUIRED)
+
 pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0)
 
 find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS

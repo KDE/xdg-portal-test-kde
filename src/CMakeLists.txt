@@ -18,6 +18,7 @@ target_link_libraries(portal-test-kde
     KF5::I18n
     KF5::KIOFileWidgets
     KF5::Notifications
+    GLIB2::GLIB2
     ${GSTREAMER_LIBRARIES}
 )
 
