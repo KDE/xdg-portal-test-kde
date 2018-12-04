@@ -192,6 +192,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QPushButton" name="notifyPixmapButton">
+        <property name="text">
+         <string>Notify me (pixmap)!!!</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QLabel" name="notificationResponse">
         <property name="text">
          <string/>

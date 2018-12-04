@@ -64,6 +64,7 @@ public Q_SLOTS:
     void requestDeviceAccess();
     void saveFileRequested();
     void sendNotification();
+    void sendNotificationPixmap();
     void requestScreenSharing();
     void requestScreenshot();
 private:

@@ -114,6 +114,7 @@ PortalTest::PortalTest(QWidget *parent, Qt::WindowFlags f)
     connect(m_mainWindow->openDir, &QPushButton::clicked, this, &PortalTest::openDirRequested);
     connect(m_mainWindow->openDirModal, &QPushButton::clicked, this, &PortalTest::openDirModalRequested);
     connect(m_mainWindow->notifyButton, &QPushButton::clicked, this, &PortalTest::sendNotification);
+    connect(m_mainWindow->notifyPixmapButton, &QPushButton::clicked, this, &PortalTest::sendNotificationPixmap);
     connect(m_mainWindow->printButton, &QPushButton::clicked, this, &PortalTest::printDocument);
     connect(m_mainWindow->requestDeviceAccess, &QPushButton::clicked, this, &PortalTest::requestDeviceAccess);
     connect(m_mainWindow->screenShareButton, &QPushButton::clicked, this, &PortalTest::requestScreenSharing);
@@ -143,7 +144,7 @@ void PortalTest::openFileRequested()
     fileDialog->setLabelText(QFileDialog::Accept, QLatin1String("Open (portal)"));
     fileDialog->setModal(false);
     fileDialog->setWindowTitle(QLatin1String("Flatpak test - open dialog"));
-
+    fileDialog->setMimeTypeFilters(QStringList { QLatin1String("text/plain"), QLatin1String("image/jpeg") } );
     connect(fileDialog, &QFileDialog::accepted, this, [this, fileDialog] () {
         if (!fileDialog->selectedFiles().isEmpty()) {
             m_mainWindow->selectedFiles->setText(fileDialog->selectedFiles().join(QLatin1String(", ")));
@@ -165,6 +166,7 @@ void PortalTest::openFileModalRequested()
 {
     QFileDialog *fileDialog = new QFileDialog(this);
     fileDialog->setFileMode(QFileDialog::ExistingFiles);
+    fileDialog->setNameFilter(QLatin1String("*.txt"));
     fileDialog->setLabelText(QFileDialog::Accept, QLatin1String("Open (portal)"));
     fileDialog->setModal(false);
     fileDialog->setWindowTitle(QLatin1String("Flatpak test - open dialog"));
@@ -430,6 +432,29 @@ void PortalTest::sendNotification()
     notify->setText(QLatin1String("<html><b>Hello world!!<b><html>"));
     notify->setActions(QStringList { i18n("Action 1"), i18n("Action 2")});
     notify->setIconName(QLatin1String("applications-development"));
+
+    m_mainWindow->notifyCloseButton->setEnabled(true);
+    notify->sendEvent();
+}
+
+void PortalTest::sendNotificationPixmap()
+{
+    KNotification *notify = new KNotification(QLatin1String("notification"), this);
+    connect(notify, static_cast<void (KNotification::*)(uint)>(&KNotification::activated), this, &PortalTest::notificationActivated);
+    connect(m_mainWindow->notifyCloseButton, &QPushButton::clicked, notify, &KNotification::close);
+    connect(notify, &KNotification::closed, [this] () {
+        m_mainWindow->notifyCloseButton->setDisabled(true);
+    });
+
+    notify->setFlags(KNotification::DefaultEvent);
+    notify->setTitle(QLatin1String("Notification test"));
+    notify->setText(QLatin1String("<html><b>Hello world!!<b><html>"));
+    notify->setActions(QStringList { i18n("Action 1"), i18n("Action 2")});
+
+    QPixmap pixmap(64, 64);
+    pixmap.fill(Qt::red);
+
+    notify->setPixmap(pixmap);
 
     m_mainWindow->notifyCloseButton->setEnabled(true);
     notify->sendEvent();
