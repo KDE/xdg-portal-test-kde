@@ -274,7 +274,7 @@ void PortalTest::gotPreparePrintResponse(uint response, const QVariantMap &resul
 
         // TODO num-copies, pages
 
-        writer.setPageSize(QPagedPaintDevice::A4);
+        writer.setPageSize(QPageSize(QPageSize::A4));
 
         painter.drawPixmap(QPoint(0,0), QPixmap(m_mainWindow->selectedFiles->text()));
         painter.end();
@@ -396,7 +396,7 @@ void PortalTest::requestDeviceAccess()
 
     QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pendingCall);
-    connect(watcher, &QDBusPendingCallWatcher::finished, [this] (QDBusPendingCallWatcher *watcher) {
+    connect(watcher, &QDBusPendingCallWatcher::finished, [] (QDBusPendingCallWatcher *watcher) {
         QDBusPendingReply<QDBusObjectPath> reply = *watcher;
         if (reply.isError()) {
             qWarning() << "Couldn't get reply";
