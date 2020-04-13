@@ -35,6 +35,8 @@
 #include <QSystemTrayIcon>
 #include <QTemporaryFile>
 #include <QWindow>
+#include <KRun>
+#include <QDesktopServices>
 
 #include <KNotification>
 
@@ -106,6 +108,12 @@ PortalTest::PortalTest(QWidget *parent, Qt::WindowFlags f)
         }
     });
 
+    connect(m_mainWindow->krun, &QPushButton::clicked, this, [this] {
+        new KRun(m_mainWindow->kurlrequester->url(), this);
+    });
+    connect(m_mainWindow->openurl, &QPushButton::clicked, this, [this] {
+        QDesktopServices::openUrl(m_mainWindow->kurlrequester->url());
+    });
     connect(m_mainWindow->inhibit, &QPushButton::clicked, this, &PortalTest::inhibitRequested);
     connect(m_mainWindow->uninhibit, &QPushButton::clicked, this, &PortalTest::uninhibitRequested);
     connect(m_mainWindow->openFile, &QPushButton::clicked, this, &PortalTest::openFileRequested);
