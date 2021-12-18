@@ -375,6 +375,11 @@
           <string>Window</string>
          </property>
         </item>
+        <item>
+         <property name="text">
+          <string>All</string>
+         </property>
+        </item>
        </widget>
       </item>
       <item>
@@ -420,7 +425,6 @@
    <zorder>label_3</zorder>
    <zorder>label_4</zorder>
    <zorder>verticalSpacer</zorder>
-   <zorder>kurlrequester</zorder>
    <zorder>label_5</zorder>
    <zorder>label_6</zorder>
    <zorder>notifyCloseButton</zorder>
@@ -439,7 +443,6 @@
    <zorder>label_14</zorder>
    <zorder>screenshotButton</zorder>
    <zorder>label_15</zorder>
-   <zorder>krun</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
