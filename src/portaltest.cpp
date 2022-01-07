@@ -127,6 +127,7 @@ PortalTest::PortalTest(QWidget *parent, Qt::WindowFlags f)
     connect(m_mainWindow->requestDeviceAccess, &QPushButton::clicked, this, &PortalTest::requestDeviceAccess);
     connect(m_mainWindow->screenShareButton, &QPushButton::clicked, this, &PortalTest::requestScreenSharing);
     connect(m_mainWindow->screenshotButton, &QPushButton::clicked, this, &PortalTest::requestScreenshot);
+    connect(m_mainWindow->accountButton, &QPushButton::clicked, this, &PortalTest::requestAccount);
 
     connect(m_mainWindow->openFileButton, &QPushButton::clicked, this, [this] () {
         QDesktopServices::openUrl(QUrl::fromLocalFile(m_mainWindow->selectedFiles->text().split(",").first()));
@@ -522,6 +523,33 @@ void PortalTest::requestScreenshot()
     });
 }
 
+void PortalTest::requestAccount()
+{
+    QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
+                                                          QLatin1String("/org/freedesktop/portal/desktop"),
+                                                          QLatin1String("org.freedesktop.portal.Account"),
+                                                          QLatin1String("GetUserInformation"));
+    // TODO add some default configuration to verify it's read/parsed properly
+    message << QLatin1String("x11:") << QVariantMap{{QLatin1String("interactive"), true}, {QLatin1String("handle_token"), getRequestToken()}};
+
+    QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pendingCall);
+    connect(watcher, &QDBusPendingCallWatcher::finished, [this] (QDBusPendingCallWatcher *watcher) {
+        QDBusPendingReply<QDBusObjectPath> reply = *watcher;
+        if (reply.isError()) {
+            qWarning() << "Couldn't get reply";
+            qWarning() << "Error: " << reply.error().message();
+        } else {
+            QDBusConnection::sessionBus().connect(QString(),
+                                                  reply.value().path(),
+                                                  QLatin1String("org.freedesktop.portal.Request"),
+                                                  QLatin1String("Response"),
+                                                  this,
+                                                  SLOT(gotAccountResponse(uint,QVariantMap)));
+        }
+    });
+}
+
 void PortalTest::gotCreateSessionResponse(uint response, const QVariantMap &results)
 {
     if (response != 0) {
@@ -630,6 +658,20 @@ void PortalTest::gotScreenshotResponse(uint response, const QVariantMap& results
         }
     } else {
         qWarning() << "Failed to take screenshot";
+    }
+}
+
+void PortalTest::gotAccountResponse(uint response, const QVariantMap& results)
+{
+    qWarning() << "Account response: " << response << results;
+    if (!response) {
+        QString resultsString = i18n("Response is:\n");
+        for(auto key : results.keys()) {
+            resultsString += "    " + key + ": " + results.value(key).toString() + "\n";
+        }
+        m_mainWindow->accountResultsLabel->setText(resultsString);
+    } else {
+        qWarning() << "Failed to get account information";
     }
 }
 

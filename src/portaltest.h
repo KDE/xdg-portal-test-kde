@@ -53,6 +53,7 @@ public Q_SLOTS:
     void gotPrintResponse(uint response, const QVariantMap &results);
     void gotPreparePrintResponse(uint response, const QVariantMap &results);
     void gotScreenshotResponse(uint response, const QVariantMap &results);
+    void gotAccountResponse(uint response, const QVariantMap &results);
     void inhibitRequested();
     void uninhibitRequested();
     void notificationActivated(uint action);
@@ -67,6 +68,7 @@ public Q_SLOTS:
     void sendNotificationPixmap();
     void requestScreenSharing();
     void requestScreenshot();
+    void requestAccount();
 private:
     bool isRunningSandbox();
     QString getSessionToken();

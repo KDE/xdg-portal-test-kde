@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>768</width>
-    <height>610</height>
+    <height>773</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -405,7 +405,24 @@
       </property>
      </widget>
     </item>
+    <item row="17" column="0">
+     <widget class="QLabel" name="label_17">
+      <property name="text">
+       <string>Account:</string>
+      </property>
+     </widget>
+    </item>
     <item row="17" column="1">
+     <widget class="QPushButton" name="accountButton">
+      <property name="text">
+       <string>Get user information</string>
+      </property>
+     </widget>
+    </item>
+    <item row="18" column="1">
+     <widget class="QLabel" name="accountResultsLabel"/>
+    </item>
+    <item row="19" column="1">
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -419,6 +436,7 @@
      </spacer>
     </item>
    </layout>
+   <zorder>accountResultsLabel</zorder>
    <zorder>label</zorder>
    <zorder>sandboxLabel</zorder>
    <zorder>label_2</zorder>
@@ -443,6 +461,8 @@
    <zorder>label_14</zorder>
    <zorder>screenshotButton</zorder>
    <zorder>label_15</zorder>
+   <zorder>accountButton</zorder>
+   <zorder>label_17</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
