@@ -1,9 +1,9 @@
 {
-    "app-id": "org.kde.portal-test-kde",
+    "app-id": "org.kde.xdg-portal-test-kde",
     "runtime": "org.kde.Platform",
     "runtime-version": "5.15-21.08",
     "sdk": "org.kde.Sdk",
-    "command": "portal-test-kde",
+    "command": "xdg-portal-test-kde",
     "finish-args": [
         "--share=ipc",
         "--socket=x11",
@@ -13,12 +13,12 @@
     ],
     "modules": [
         {
-            "name": "portal-test-kde",
+            "name": "xdg-portal-test-kde",
             "buildsystem": "cmake-ninja",
             "sources": [
                 {
-                    "type": "git",
-                    "url": "https://invent.kde.org/libraries/xdg-portal-test-kde.git"
+                    "type": "dir",
+                    "path": "../"
                 }
             ]
         }

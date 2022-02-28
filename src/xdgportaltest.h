@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 Red Hat, Inc
+ * Copyright © 2016-2022 Red Hat, Inc
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,8 +18,8 @@
  *       Jan Grulich <jgrulich@redhat.com>
  */
 
-#ifndef PORTAL_TEST_KDE_H
-#define PORTAL_TEST_KDE_H
+#ifndef XDG_PORTAL_TEST_KDE_H
+#define XDG_PORTAL_TEST_KDE_H
 
 #include <QDBusObjectPath>
 #include <QFlags>
@@ -28,12 +28,12 @@
 
 namespace Ui
 {
-class PortalTest;
+class XdgPortalTest;
 }
 
-Q_DECLARE_LOGGING_CATEGORY(PortalTestKde)
+Q_DECLARE_LOGGING_CATEGORY(XdgPortalTestKde)
 
-class PortalTest : public QMainWindow
+class XdgPortalTest : public QMainWindow
 {
     Q_OBJECT
 public:
@@ -43,8 +43,8 @@ public:
     } Stream;
     typedef QList<Stream> Streams;
 
-    PortalTest(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
-    ~PortalTest();
+    XdgPortalTest(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
+    ~XdgPortalTest();
 
 public Q_SLOTS:
     void gotCreateSessionResponse(uint response, const QVariantMap &results);
@@ -76,11 +76,11 @@ private:
 
     QDBusObjectPath m_inhibitionRequest;
     QString m_session;
-    Ui::PortalTest * m_mainWindow;
+    Ui::XdgPortalTest * m_mainWindow;
     uint m_sessionTokenCounter;
     uint m_requestTokenCounter;
 };
 
-#endif // PORTAL_TEST_KDE_H
+#endif // XDG_PORTAL_TEST_KDE_H
 
 

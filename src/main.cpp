@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 Red Hat, Inc
+ * Copyright © 2016-2022 Red Hat, Inc
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,16 +20,19 @@
 
 #include <QApplication>
 
-#include "portaltest.h"
+#include <KAboutData>
+
+#include "xdgportaltest.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    a.setOrganizationDomain(QLatin1String("kde.org"));
+    KAboutData about(QStringLiteral("xdg-portal-test-kde"), QStringLiteral("Portal Test KDE"), QString());
+    KAboutData::setApplicationData(about);
 
-    PortalTest *portalTest = new PortalTest(0);
-    portalTest->show();
+    XdgPortalTest xdgPortalTest;
+    xdgPortalTest.show();
 
     return a.exec();
 }

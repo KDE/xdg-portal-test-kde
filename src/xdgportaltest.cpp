@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 Red Hat, Inc
+ * Copyright © 2016-2022 Red Hat, Inc
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,8 +18,8 @@
  *       Jan Grulich <jgrulich@redhat.com>
  */
 
-#include "portaltest.h"
-#include "ui_portaltest.h"
+#include "xdgportaltest.h"
+#include "ui_xdgportaltest.h"
 
 #include <QDBusArgument>
 #include <QDBusConnection>
@@ -29,6 +29,7 @@
 #include <QFile>
 #include <QFileDialog>
 #include <QMenu>
+#include <QMenuBar>
 #include <QPainter>
 #include <QPdfWriter>
 #include <QStandardPaths>
@@ -42,12 +43,12 @@
 
 #include <gst/gst.h>
 
-Q_LOGGING_CATEGORY(PortalTestKde, "portal-test-kde")
+Q_LOGGING_CATEGORY(XdgPortalTestKde, "xdg-portal-test-kde")
 
-Q_DECLARE_METATYPE(PortalTest::Stream);
-Q_DECLARE_METATYPE(PortalTest::Streams);
+Q_DECLARE_METATYPE(XdgPortalTest::Stream);
+Q_DECLARE_METATYPE(XdgPortalTest::Streams);
 
-const QDBusArgument &operator >> (const QDBusArgument &arg, PortalTest::Stream &stream)
+const QDBusArgument &operator >> (const QDBusArgument &arg, XdgPortalTest::Stream &stream)
 {
     arg.beginStructure();
     arg >> stream.node_id;
@@ -67,21 +68,25 @@ const QDBusArgument &operator >> (const QDBusArgument &arg, PortalTest::Stream &
     return arg;
 }
 
-PortalTest::PortalTest(QWidget *parent, Qt::WindowFlags f)
+XdgPortalTest::XdgPortalTest(QWidget *parent, Qt::WindowFlags f)
     : QMainWindow(parent, f)
-    , m_mainWindow(new Ui::PortalTest)
+    , m_mainWindow(new Ui::XdgPortalTest)
     , m_sessionTokenCounter(0)
     , m_requestTokenCounter(0)
 {
-    QLoggingCategory::setFilterRules(QStringLiteral("portal-test-kde.debug = true"));
+    QLoggingCategory::setFilterRules(QStringLiteral("xdg-portal-test-kde.debug = true"));
 
     m_mainWindow->setupUi(this);
 
     m_mainWindow->sandboxLabel->setText(isRunningSandbox() ? QLatin1String("yes") : QLatin1String("no"));
     m_mainWindow->printWarning->setText(QLatin1String("Select an image in JPG format using FileChooser part!!"));
 
-    QMenu *menu = new QMenu(this);
+    QMenuBar *menubar = new QMenuBar(this);
+    setMenuBar(menubar);
+
+    QMenu *menu = new QMenu(QLatin1String("File"), menubar);
     menu->addAction(QIcon::fromTheme(QLatin1String("application-exit")), QLatin1String("Quit"), qApp, &QApplication::quit);
+    menubar->insertMenu(nullptr, menu);
 
     QSystemTrayIcon *trayIcon = new QSystemTrayIcon(QIcon::fromTheme(QLatin1String("kde")), this);
     trayIcon->setContextMenu(menu);
@@ -114,20 +119,20 @@ PortalTest::PortalTest(QWidget *parent, Qt::WindowFlags f)
     connect(m_mainWindow->openurl, &QPushButton::clicked, this, [this] {
         QDesktopServices::openUrl(m_mainWindow->kurlrequester->url());
     });
-    connect(m_mainWindow->inhibit, &QPushButton::clicked, this, &PortalTest::inhibitRequested);
-    connect(m_mainWindow->uninhibit, &QPushButton::clicked, this, &PortalTest::uninhibitRequested);
-    connect(m_mainWindow->openFile, &QPushButton::clicked, this, &PortalTest::openFileRequested);
-    connect(m_mainWindow->openFileModal, &QPushButton::clicked, this, &PortalTest::openFileModalRequested);
-    connect(m_mainWindow->saveFile, &QPushButton::clicked, this, &PortalTest::saveFileRequested);
-    connect(m_mainWindow->openDir, &QPushButton::clicked, this, &PortalTest::openDirRequested);
-    connect(m_mainWindow->openDirModal, &QPushButton::clicked, this, &PortalTest::openDirModalRequested);
-    connect(m_mainWindow->notifyButton, &QPushButton::clicked, this, &PortalTest::sendNotification);
-    connect(m_mainWindow->notifyPixmapButton, &QPushButton::clicked, this, &PortalTest::sendNotificationPixmap);
-    connect(m_mainWindow->printButton, &QPushButton::clicked, this, &PortalTest::printDocument);
-    connect(m_mainWindow->requestDeviceAccess, &QPushButton::clicked, this, &PortalTest::requestDeviceAccess);
-    connect(m_mainWindow->screenShareButton, &QPushButton::clicked, this, &PortalTest::requestScreenSharing);
-    connect(m_mainWindow->screenshotButton, &QPushButton::clicked, this, &PortalTest::requestScreenshot);
-    connect(m_mainWindow->accountButton, &QPushButton::clicked, this, &PortalTest::requestAccount);
+    connect(m_mainWindow->inhibit, &QPushButton::clicked, this, &XdgPortalTest::inhibitRequested);
+    connect(m_mainWindow->uninhibit, &QPushButton::clicked, this, &XdgPortalTest::uninhibitRequested);
+    connect(m_mainWindow->openFile, &QPushButton::clicked, this, &XdgPortalTest::openFileRequested);
+    connect(m_mainWindow->openFileModal, &QPushButton::clicked, this, &XdgPortalTest::openFileModalRequested);
+    connect(m_mainWindow->saveFile, &QPushButton::clicked, this, &XdgPortalTest::saveFileRequested);
+    connect(m_mainWindow->openDir, &QPushButton::clicked, this, &XdgPortalTest::openDirRequested);
+    connect(m_mainWindow->openDirModal, &QPushButton::clicked, this, &XdgPortalTest::openDirModalRequested);
+    connect(m_mainWindow->notifyButton, &QPushButton::clicked, this, &XdgPortalTest::sendNotification);
+    connect(m_mainWindow->notifyPixmapButton, &QPushButton::clicked, this, &XdgPortalTest::sendNotificationPixmap);
+    connect(m_mainWindow->printButton, &QPushButton::clicked, this, &XdgPortalTest::printDocument);
+    connect(m_mainWindow->requestDeviceAccess, &QPushButton::clicked, this, &XdgPortalTest::requestDeviceAccess);
+    connect(m_mainWindow->screenShareButton, &QPushButton::clicked, this, &XdgPortalTest::requestScreenSharing);
+    connect(m_mainWindow->screenshotButton, &QPushButton::clicked, this, &XdgPortalTest::requestScreenshot);
+    connect(m_mainWindow->accountButton, &QPushButton::clicked, this, &XdgPortalTest::requestAccount);
 
     connect(m_mainWindow->openFileButton, &QPushButton::clicked, this, [this] () {
         QDesktopServices::openUrl(QUrl::fromLocalFile(m_mainWindow->selectedFiles->text().split(",").first()));
@@ -136,17 +141,17 @@ PortalTest::PortalTest(QWidget *parent, Qt::WindowFlags f)
     gst_init(nullptr, nullptr);
 }
 
-PortalTest::~PortalTest()
+XdgPortalTest::~XdgPortalTest()
 {
     delete m_mainWindow;
 }
 
-void PortalTest::notificationActivated(uint action)
+void XdgPortalTest::notificationActivated(uint action)
 {
     m_mainWindow->notificationResponse->setText(QString("Action number %1 activated").arg(QString::number(action)));
 }
 
-void PortalTest::openFileRequested()
+void XdgPortalTest::openFileRequested()
 {
     QFileDialog *fileDialog = new QFileDialog(this);
     fileDialog->setFileMode(QFileDialog::ExistingFiles);
@@ -171,7 +176,7 @@ void PortalTest::openFileRequested()
     fileDialog->show();
 }
 
-void PortalTest::openFileModalRequested()
+void XdgPortalTest::openFileModalRequested()
 {
     QFileDialog *fileDialog = new QFileDialog(this);
     fileDialog->setFileMode(QFileDialog::ExistingFiles);
@@ -196,7 +201,7 @@ void PortalTest::openFileModalRequested()
     }
 }
 
-void PortalTest::openDirRequested()
+void XdgPortalTest::openDirRequested()
 {
     QFileDialog *fileDialog = new QFileDialog(this);
     fileDialog->setFileMode(QFileDialog::Directory);
@@ -211,7 +216,7 @@ void PortalTest::openDirRequested()
     fileDialog->show();
 }
 
-void PortalTest::openDirModalRequested()
+void XdgPortalTest::openDirModalRequested()
 {
     QFileDialog *fileDialog = new QFileDialog(this);
     fileDialog->setFileMode(QFileDialog::Directory);
@@ -225,13 +230,13 @@ void PortalTest::openDirModalRequested()
     }
 }
 
-void PortalTest::gotPrintResponse(uint response, const QVariantMap &results)
+void XdgPortalTest::gotPrintResponse(uint response, const QVariantMap &results)
 {
     // TODO do cleaning
     qWarning() << response << results;
 }
 
-void PortalTest::gotPreparePrintResponse(uint response, const QVariantMap &results)
+void XdgPortalTest::gotPreparePrintResponse(uint response, const QVariantMap &results)
 {
     if (!response) {
         QVariantMap settings;
@@ -312,7 +317,7 @@ void PortalTest::gotPreparePrintResponse(uint response, const QVariantMap &resul
     }
 }
 
-void PortalTest::inhibitRequested()
+void XdgPortalTest::inhibitRequested()
 {
     const QString parentWindowId = QLatin1String("x11:") + QString::number(winId());
 
@@ -340,7 +345,7 @@ void PortalTest::inhibitRequested()
     });
 }
 
-void PortalTest::uninhibitRequested()
+void XdgPortalTest::uninhibitRequested()
 {
     QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
                                                           m_inhibitionRequest.path(),
@@ -353,7 +358,7 @@ void PortalTest::uninhibitRequested()
     m_inhibitionRequest = QDBusObjectPath();
 }
 
-void PortalTest::printDocument()
+void XdgPortalTest::printDocument()
 {
     const QString parentWindowId = QLatin1String("x11:") + QString::number(winId());
 
@@ -382,7 +387,7 @@ void PortalTest::printDocument()
     });
 }
 
-void PortalTest::requestDeviceAccess()
+void XdgPortalTest::requestDeviceAccess()
 {
     qWarning() << "Request device access";
     const QString device = m_mainWindow->deviceCombobox->currentIndex() == 0 ? QLatin1String("microphone") :
@@ -408,7 +413,7 @@ void PortalTest::requestDeviceAccess()
     });
 }
 
-void PortalTest::saveFileRequested()
+void XdgPortalTest::saveFileRequested()
 {
     QFileDialog *fileDialog = new QFileDialog(this);
     fileDialog->setAcceptMode(QFileDialog::AcceptSave);
@@ -427,10 +432,10 @@ void PortalTest::saveFileRequested()
     }
 }
 
-void PortalTest::sendNotification()
+void XdgPortalTest::sendNotification()
 {
     KNotification *notify = new KNotification(QLatin1String("notification"), this);
-    connect(notify, static_cast<void (KNotification::*)(uint)>(&KNotification::activated), this, &PortalTest::notificationActivated);
+    connect(notify, static_cast<void (KNotification::*)(uint)>(&KNotification::activated), this, &XdgPortalTest::notificationActivated);
     connect(m_mainWindow->notifyCloseButton, &QPushButton::clicked, notify, &KNotification::close);
     connect(notify, &KNotification::closed, [this] () {
         m_mainWindow->notifyCloseButton->setDisabled(true);
@@ -446,10 +451,10 @@ void PortalTest::sendNotification()
     notify->sendEvent();
 }
 
-void PortalTest::sendNotificationPixmap()
+void XdgPortalTest::sendNotificationPixmap()
 {
     KNotification *notify = new KNotification(QLatin1String("notification"), this);
-    connect(notify, static_cast<void (KNotification::*)(uint)>(&KNotification::activated), this, &PortalTest::notificationActivated);
+    connect(notify, static_cast<void (KNotification::*)(uint)>(&KNotification::activated), this, &XdgPortalTest::notificationActivated);
     connect(m_mainWindow->notifyCloseButton, &QPushButton::clicked, notify, &KNotification::close);
     connect(notify, &KNotification::closed, [this] () {
         m_mainWindow->notifyCloseButton->setDisabled(true);
@@ -469,7 +474,7 @@ void PortalTest::sendNotificationPixmap()
     notify->sendEvent();
 }
 
-void PortalTest::requestScreenSharing()
+void XdgPortalTest::requestScreenSharing()
 {
     QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
                                                           QLatin1String("/org/freedesktop/portal/desktop"),
@@ -496,7 +501,7 @@ void PortalTest::requestScreenSharing()
     });
 }
 
-void PortalTest::requestScreenshot()
+void XdgPortalTest::requestScreenshot()
 {
     QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
                                                           QLatin1String("/org/freedesktop/portal/desktop"),
@@ -523,7 +528,7 @@ void PortalTest::requestScreenshot()
     });
 }
 
-void PortalTest::requestAccount()
+void XdgPortalTest::requestAccount()
 {
     QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
                                                           QLatin1String("/org/freedesktop/portal/desktop"),
@@ -550,7 +555,7 @@ void PortalTest::requestAccount()
     });
 }
 
-void PortalTest::gotCreateSessionResponse(uint response, const QVariantMap &results)
+void XdgPortalTest::gotCreateSessionResponse(uint response, const QVariantMap &results)
 {
     if (response != 0) {
         qWarning() << "Failed to create session: " << response;
@@ -587,7 +592,7 @@ void PortalTest::gotCreateSessionResponse(uint response, const QVariantMap &resu
     });
 }
 
-void PortalTest::gotSelectSourcesResponse(uint response, const QVariantMap &results)
+void XdgPortalTest::gotSelectSourcesResponse(uint response, const QVariantMap &results)
 {
     if (response != 0) {
         qWarning() << "Failed to select sources: " << response;
@@ -621,7 +626,7 @@ void PortalTest::gotSelectSourcesResponse(uint response, const QVariantMap &resu
     });
 }
 
-void PortalTest::gotStartResponse(uint response, const QVariantMap &results)
+void XdgPortalTest::gotStartResponse(uint response, const QVariantMap &results)
 {
     if (response != 0) {
         qWarning() << "Failed to start: " << response;
@@ -649,7 +654,7 @@ void PortalTest::gotStartResponse(uint response, const QVariantMap &results)
     }
 }
 
-void PortalTest::gotScreenshotResponse(uint response, const QVariantMap& results)
+void XdgPortalTest::gotScreenshotResponse(uint response, const QVariantMap& results)
 {
     qWarning() << "Screenshot response: " << response << results;
     if (!response) {
@@ -661,7 +666,7 @@ void PortalTest::gotScreenshotResponse(uint response, const QVariantMap& results
     }
 }
 
-void PortalTest::gotAccountResponse(uint response, const QVariantMap& results)
+void XdgPortalTest::gotAccountResponse(uint response, const QVariantMap& results)
 {
     qWarning() << "Account response: " << response << results;
     if (!response) {
@@ -675,7 +680,7 @@ void PortalTest::gotAccountResponse(uint response, const QVariantMap& results)
     }
 }
 
-bool PortalTest::isRunningSandbox()
+bool XdgPortalTest::isRunningSandbox()
 {
     QString runtimeDir = qgetenv("XDG_RUNTIME_DIR");
 
@@ -688,13 +693,13 @@ bool PortalTest::isRunningSandbox()
     return file.exists();
 }
 
-QString PortalTest::getSessionToken()
+QString XdgPortalTest::getSessionToken()
 {
     m_sessionTokenCounter += 1;
     return QString("u%1").arg(m_sessionTokenCounter);
 }
 
-QString PortalTest::getRequestToken()
+QString XdgPortalTest::getRequestToken()
 {
     m_requestTokenCounter += 1;
     return QString("u%1").arg(m_requestTokenCounter);

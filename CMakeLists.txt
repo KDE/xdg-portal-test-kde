@@ -1,7 +1,8 @@
-project(flatpak-portal-test-kde)
+project(xdg-portal-test-kde)
 
-cmake_minimum_required(VERSION 2.8.12 FATAL_ERROR)
-set(QT_MIN_VERSION "5.4.0")
+cmake_minimum_required(VERSION 3.16)
+
+set(QT_MIN_VERSION "5.15.2")
 
 ################# set KDE specific information #################
 
