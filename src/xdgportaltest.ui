@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>768</width>
-    <height>859</height>
+    <height>875</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -494,6 +494,31 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item row="26" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_10">
+       <item>
+        <widget class="QPushButton" name="configureShortcuts">
+         <property name="text">
+          <string>Configure Shortcuts</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="shortcutsDescriptions">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="shortcutState">
+         <property name="text">
+          <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
     <zorder>accountResultsLabel</zorder>

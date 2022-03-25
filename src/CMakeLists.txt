@@ -12,6 +12,9 @@ ki18n_wrap_ui(xdg_portal_test_kde_SRCS
 
 include_directories(${GSTREAMER_INCLUDE_DIRS})
 
+qt_add_dbus_interface(xdg_portal_test_kde_SRCS org.freedesktop.portal.GlobalShortcuts.xml globalshortcuts_portal_interface)
+qt_add_dbus_interface(xdg_portal_test_kde_SRCS org.freedesktop.portal.Request.xml portalsrequest_interface)
+
 add_executable(xdg-portal-test-kde ${xdg_portal_test_kde_SRCS})
 
 target_link_libraries(xdg-portal-test-kde

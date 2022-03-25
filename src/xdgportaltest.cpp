@@ -24,6 +24,8 @@
 #include <QSystemTrayIcon>
 #include <QTemporaryFile>
 #include <QWindow>
+#include <KWindowSystem>
+#include <KStandardAction>
 
 #include <KNotification>
 #include <KIO/OpenUrlJob>
@@ -35,6 +37,8 @@
 #include <gst/gst.h>
 
 #include "dropsite/dropsitewindow.h"
+#include <globalshortcuts_portal_interface.h>
+#include <portalsrequest_interface.h>
 
 Q_LOGGING_CATEGORY(XdgPortalTestKde, "xdg-portal-test-kde")
 
@@ -67,6 +71,9 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, PortalIcon &icon)
     argument.endStructure();
     return argument;
 }
+
+/// a(sa{sv})
+using Shortcuts = QList<QPair<QString, QVariantMap>>;
 
 const QDBusArgument &operator >> (const QDBusArgument &arg, XdgPortalTest::Stream &stream)
 {
@@ -130,6 +137,9 @@ XdgPortalTest::XdgPortalTest(QWidget *parent, Qt::WindowFlags f)
     , m_sessionTokenCounter(0)
     , m_requestTokenCounter(0)
 {
+    qDBusRegisterMetaType<Shortcuts>();
+    qDBusRegisterMetaType<QPair<QString,QVariantMap>>();
+
     QLoggingCategory::setFilterRules(QStringLiteral("xdg-portal-test-kde.debug = true"));
     PortalIcon::registerDBusType();
 
@@ -203,10 +213,47 @@ XdgPortalTest::XdgPortalTest(QWidget *parent, Qt::WindowFlags f)
     // launcher buttons only work correctly inside sandboxes
     m_mainWindow->webAppButton->setEnabled(isRunningSandbox());
     m_mainWindow->removeWebAppButton->setEnabled(isRunningSandbox());
+    connect(m_mainWindow->configureShortcuts, &QPushButton::clicked, this, &XdgPortalTest::configureShortcuts);
 
     connect(m_mainWindow->openFileButton, &QPushButton::clicked, this, [this] () {
         QDesktopServices::openUrl(QUrl::fromLocalFile(m_mainWindow->selectedFiles->text().split(",").first()));
     });
+
+    m_shortcuts = new OrgFreedesktopPortalGlobalShortcutsInterface(QLatin1String("org.freedesktop.portal.Desktop"),
+                                                                      QLatin1String("/org/freedesktop/portal/desktop"),
+                                                                      QDBusConnection::sessionBus(), this);
+
+    connect(m_shortcuts, &OrgFreedesktopPortalGlobalShortcutsInterface::Activated, this, [this] (const QDBusObjectPath &session_handle, const QString &shortcut_id, qulonglong timestamp, const QVariantMap &options) {
+        qDebug() << "activated" << session_handle.path() << shortcut_id << timestamp << options;
+        m_mainWindow->shortcutState->setText(QStringLiteral("Active!"));
+    });
+    connect(m_shortcuts, &OrgFreedesktopPortalGlobalShortcutsInterface::Deactivated, this, [this] {
+        m_mainWindow->shortcutState->setText(QStringLiteral("Deactivated!"));
+    });
+
+    Shortcuts initialShortcuts = {
+        { QStringLiteral("AwesomeTrigger"), { { QStringLiteral("description"), QStringLiteral("Awesome Description") } } }
+    };
+    QDBusArgument arg;
+    arg << initialShortcuts;
+    auto reply = m_shortcuts->CreateSession({
+        { QLatin1String("session_handle_token"), "XdpPortalTest" },
+        { QLatin1String("handle_token"), getRequestToken() },
+        { QLatin1String("shortcuts"), QVariant::fromValue(arg) },
+    });
+    reply.waitForFinished();
+    if (reply.isError()) {
+        qWarning() << "Couldn't get reply";
+        qWarning() << "Error:" << reply.error().message();
+        m_mainWindow->shortcutsDescriptions->setText(reply.error().message());
+    } else {
+        QDBusConnection::sessionBus().connect(QString(),
+                                            reply.value().path(),
+                                            QLatin1String("org.freedesktop.portal.Request"),
+                                            QLatin1String("Response"),
+                                            this,
+                                            SLOT(gotGlobalShortcutsCreateSessionResponse(uint,QVariantMap)));
+    }
 
     gst_init(nullptr, nullptr);
 
@@ -470,6 +517,7 @@ void XdgPortalTest::requestDeviceAccess()
     QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
     auto watcher = new QDBusPendingCallWatcher(pendingCall);
     connect(watcher, &QDBusPendingCallWatcher::finished, this, [] (QDBusPendingCallWatcher *watcher) {
+        watcher->deleteLater();
         QDBusPendingReply<QDBusObjectPath> reply = *watcher;
         if (reply.isError()) {
             qWarning() << "Couldn't get reply";
@@ -939,3 +987,64 @@ void XdgPortalTest::initWayland()
     registry->setup();
 }
 
+void XdgPortalTest::gotGlobalShortcutsCreateSessionResponse(uint res, const QVariantMap& results)
+{
+    if (res != 0) {
+        qWarning() << "failed to create a global shortcuts session" << res << results;
+        return;
+    }
+
+    m_globalShortcutsSession = QDBusObjectPath(results["session_handle"].toString());
+
+    auto reply = m_shortcuts->ListShortcuts(m_globalShortcutsSession, {});
+    reply.waitForFinished();
+    if (reply.isError()) {
+        qWarning() << "failed to call ListShortcuts" << reply.error();
+        return;
+    }
+
+    auto req = new OrgFreedesktopPortalRequestInterface(QLatin1String("org.freedesktop.portal.Desktop"),
+                                                        reply.value().path(), QDBusConnection::sessionBus(), this);
+
+    // BindShortcuts and ListShortcuts answer the same
+    connect(req, &OrgFreedesktopPortalRequestInterface::Response, this, &XdgPortalTest::gotListShortcutsResponse);
+    connect(req, &OrgFreedesktopPortalRequestInterface::Response, req, &QObject::deleteLater);
+}
+
+void XdgPortalTest::gotListShortcutsResponse(uint code, const QVariantMap& results)
+{
+    if (code != 0) {
+        qDebug() << "failed to get the list of shortcuts" << code << results;
+        return;
+    }
+
+    if (!results.contains("shortcuts")) {
+        qWarning() << "no shortcuts reply" << results;
+        return;
+    }
+
+    Shortcuts s;
+    const auto arg = results["shortcuts"].value<QDBusArgument>();
+    arg >> s;
+    QString desc;
+    for (auto it = s.cbegin(), itEnd = s.cend(); it != itEnd; ++it) {
+        desc += i18n("%1: %2 %3", it->first, it->second["description"].toString(), it->second["trigger_description"].toString());
+    }
+    m_mainWindow->shortcutsDescriptions->setText(desc);
+}
+
+void XdgPortalTest::configureShortcuts()
+{
+    auto reply = m_shortcuts->BindShortcuts(m_globalShortcutsSession, {},  parentWindowId(), { { "handle_token", getRequestToken() } });
+    reply.waitForFinished();
+    if (reply.isError()) {
+        qWarning() << "failed to call BindShortcuts" << reply.error();
+        return;
+    }
+
+    auto req = new OrgFreedesktopPortalRequestInterface(QLatin1String("org.freedesktop.portal.Desktop"),
+                                                        reply.value().path(), QDBusConnection::sessionBus(), this);
+
+    // BindShortcuts and ListShortcuts answer the same
+    connect(req, &OrgFreedesktopPortalRequestInterface::Response, this, &XdgPortalTest::gotListShortcutsResponse);
+}

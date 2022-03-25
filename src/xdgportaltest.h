@@ -17,6 +17,7 @@
 #include "ui_xdgportaltest.h"
 
 class QDBusMessage;
+class OrgFreedesktopPortalGlobalShortcutsInterface;
 
 namespace Ui
 {
@@ -54,6 +55,8 @@ public Q_SLOTS:
     void gotPreparePrintResponse(uint response, const QVariantMap &results);
     void gotScreenshotResponse(uint response, const QVariantMap &results);
     void gotAccountResponse(uint response, const QVariantMap &results);
+    void gotGlobalShortcutsCreateSessionResponse(uint, const QVariantMap &results);
+    void gotListShortcutsResponse(uint, const QVariantMap &results);
     void inhibitRequested();
     void uninhibitRequested();
     void notificationActivated(uint action);
@@ -75,13 +78,14 @@ public Q_SLOTS:
     void addLauncher();
     void gotLauncher(uint response, const QVariantMap &results);
     void removeLauncher();
+    void configureShortcuts();
 
 private:
     bool isRunningSandbox();
     QString getSessionToken();
     QString getRequestToken();
-
     QString parentWindowId() const;
+
     void initWayland();
 
     QDBusObjectPath m_inhibitionRequest;
@@ -91,4 +95,7 @@ private:
     uint m_requestTokenCounter;
 
     KWayland::Client::XdgExported *m_xdgExported = nullptr;
+    QString m_globalShortcutsSessionToken;
+    QDBusObjectPath m_globalShortcutsSession;
+    OrgFreedesktopPortalGlobalShortcutsInterface *m_shortcuts;
 };
