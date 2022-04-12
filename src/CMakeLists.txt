@@ -18,6 +18,7 @@ target_link_libraries(xdg-portal-test-kde
     KF5::I18n
     KF5::KIOFileWidgets
     KF5::Notifications
+    KF5::WindowSystem
     GLIB2::GLIB2
     ${GSTREAMER_LIBRARIES}
 )

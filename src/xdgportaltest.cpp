@@ -2,6 +2,7 @@
  * SPDX-License-Identifier: LGPL-2.0-or-later
  * SPDX-FileCopyrightText: 2016-2022 Red Hat Inc
  * SPDX-FileContributor: Jan Grulich <jgrulich@redhat.com>
+ * SPDX-FileCopyrightText: 2022 Harald Sitter <sitter@kde.org>
  */
 
 #include "xdgportaltest.h"
@@ -25,6 +26,7 @@
 #include <KRun>
 #include <QDesktopServices>
 
+#include <KWindowSystem>
 #include <KNotification>
 
 #include <gst/gst.h>
@@ -52,6 +54,38 @@ const QDBusArgument &operator >> (const QDBusArgument &arg, XdgPortalTest::Strea
     arg.endStructure();
 
     return arg;
+}
+
+static QString desktopPortalService()
+{
+    return QStringLiteral("org.freedesktop.portal.Desktop");
+}
+
+static QString desktopPortalPath()
+{
+    return QStringLiteral("/org/freedesktop/portal/desktop");
+}
+
+static QString portalRequestInterface()
+{
+    return QStringLiteral("org.freedesktop.portal.Request");
+}
+
+static QString portalRequestResponse()
+{
+    return QStringLiteral("Response");
+}
+
+QString XdgPortalTest::parentWindowId() const
+{
+    switch (KWindowSystem::platform()) {
+    case KWindowSystem::Platform::X11:
+        return QLatin1String("x11:") + QString::number(winId());
+    // TODO case KWindowSystem::Platform::Wayland:
+    case KWindowSystem::Platform::Unknown:
+        break;
+    }
+    return {};
 }
 
 XdgPortalTest::XdgPortalTest(QWidget *parent, Qt::WindowFlags f)
@@ -119,6 +153,7 @@ XdgPortalTest::XdgPortalTest(QWidget *parent, Qt::WindowFlags f)
     connect(m_mainWindow->screenShareButton, &QPushButton::clicked, this, &XdgPortalTest::requestScreenSharing);
     connect(m_mainWindow->screenshotButton, &QPushButton::clicked, this, &XdgPortalTest::requestScreenshot);
     connect(m_mainWindow->accountButton, &QPushButton::clicked, this, &XdgPortalTest::requestAccount);
+    connect(m_mainWindow->appChooserButton, &QPushButton::clicked, this, &XdgPortalTest::chooseApplication);
 
     connect(m_mainWindow->openFileButton, &QPushButton::clicked, this, [this] () {
         QDesktopServices::openUrl(QUrl::fromLocalFile(m_mainWindow->selectedFiles->text().split(",").first()));
@@ -689,4 +724,37 @@ QString XdgPortalTest::getRequestToken()
 {
     m_requestTokenCounter += 1;
     return QString("u%1").arg(m_requestTokenCounter);
+}
+
+void XdgPortalTest::chooseApplication()
+{
+    QDBusMessage message = QDBusMessage::createMethodCall(desktopPortalService(),
+                                                          desktopPortalPath(),
+                                                          QStringLiteral("org.freedesktop.portal.OpenURI"),
+                                                          QStringLiteral("OpenURI"));
+
+    message << parentWindowId() << QStringLiteral("https://kde.org") << QVariantMap{{QStringLiteral("ask"), true}};
+
+    QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
+    auto watcher = new QDBusPendingCallWatcher(pendingCall, this);
+    connect(watcher, &QDBusPendingCallWatcher::finished, this, [this](QDBusPendingCallWatcher *watcher) {
+        watcher->deleteLater();
+        QDBusPendingReply<QDBusObjectPath> reply = *watcher;
+        if (reply.isError()) {
+            qWarning() << "Couldn't get reply";
+            qWarning() << "Error: " << reply.error().message();
+        } else {
+            QDBusConnection::sessionBus().connect(desktopPortalService(),
+                                                  reply.value().path(),
+                                                  portalRequestInterface(),
+                                                  portalRequestResponse(),
+                                                  this,
+                                                  SLOT(gotApplicationChoice(uint,QVariantMap)));
+        }
+    });
+}
+
+void XdgPortalTest::gotApplicationChoice(uint response, const QVariantMap &results)
+{
+    qDebug() << response << results;
 }

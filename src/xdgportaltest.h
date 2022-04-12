@@ -2,6 +2,7 @@
  * SPDX-License-Identifier: LGPL-2.0-or-later
  * SPDX-FileCopyrightText: 2016-2022 Red Hat Inc
  * SPDX-FileContributor: Jan Grulich <jgrulich@redhat.com>
+ * SPDX-FileCopyrightText: 2022 Harald Sitter <sitter@kde.org>
  */
 
 #ifndef XDG_PORTAL_TEST_KDE_H
@@ -11,6 +12,8 @@
 #include <QFlags>
 #include <QLoggingCategory>
 #include <QMainWindow>
+
+class QDBusMessage;
 
 namespace Ui
 {
@@ -55,10 +58,14 @@ public Q_SLOTS:
     void requestScreenSharing();
     void requestScreenshot();
     void requestAccount();
+    void chooseApplication();
+    void gotApplicationChoice(uint response, const QVariantMap &results);
 private:
     bool isRunningSandbox();
     QString getSessionToken();
     QString getRequestToken();
+
+    QString parentWindowId() const;
 
     QDBusObjectPath m_inhibitionRequest;
     QString m_session;

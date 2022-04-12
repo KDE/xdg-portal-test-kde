@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>768</width>
-    <height>773</height>
+    <height>737</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -419,10 +419,10 @@
       </property>
      </widget>
     </item>
-    <item row="18" column="1">
+    <item row="19" column="1">
      <widget class="QLabel" name="accountResultsLabel"/>
     </item>
-    <item row="19" column="1">
+    <item row="20" column="1">
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -434,6 +434,20 @@
        </size>
       </property>
      </spacer>
+    </item>
+    <item row="18" column="1">
+     <widget class="QPushButton" name="appChooserButton">
+      <property name="text">
+       <string>Choose Application</string>
+      </property>
+     </widget>
+    </item>
+    <item row="18" column="0">
+     <widget class="QLabel" name="label_16">
+      <property name="text">
+       <string>OpenUR/AppChooser:</string>
+      </property>
+     </widget>
     </item>
    </layout>
    <zorder>accountResultsLabel</zorder>
@@ -463,6 +477,8 @@
    <zorder>label_15</zorder>
    <zorder>accountButton</zorder>
    <zorder>label_17</zorder>
+   <zorder>appChooserButton</zorder>
+   <zorder>label_16</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
