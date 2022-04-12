@@ -1,0 +1,16 @@
+[Desktop Entry]
+Name=Gwenview
+GenericName=KDE Image Viewer
+Comment=A simple image viewer
+Exec=gwenview %U
+Terminal=false
+Icon=gwenview
+Type=Application
+Categories=Qt;KDE;Graphics;Viewer;Photography;
+MimeType=inode/directory;image/avif;image/gif;image/heif;image/jpeg;image/jxl;image/png;image/bmp;image/x-eps;image/x-icns;image/x-ico;image/x-portable-bitmap;image/x-portable-graymap;image/x-portable-pixmap;image/x-xbitmap;image/x-xpixmap;image/tiff;image/x-psd;image/x-webp;image/webp;image/x-tga;application/x-krita;image/x-kde-raw;image/x-canon-cr2;image/x-canon-crw;image/x-kodak-dcr;image/x-adobe-dng;image/x-kodak-k25;image/x-kodak-kdc;image/x-minolta-mrw;image/x-nikon-nef;image/x-olympus-orf;image/x-pentax-pef;image/x-fuji-raf;image/x-panasonic-rw;image/x-sony-sr2;image/x-sony-srf;image/x-sigma-x3f;image/x-sony-arw;image/x-panasonic-rw2;
+X-DocPath=gwenview/index.html
+# InitialPreference should be greater than Okular so that Gwenview is the
+# primary application associated with images, but less than Konqueror or Dolphin
+# so that Gwenview is not the primary applications for folders.
+InitialPreference=8
+X-DBUS-ServiceName=org.kde.gwenview

@@ -60,6 +60,10 @@ public Q_SLOTS:
     void requestAccount();
     void chooseApplication();
     void gotApplicationChoice(uint response, const QVariantMap &results);
+    void addLauncher();
+    void gotLauncher(uint response, const QVariantMap &results);
+    void removeLauncher();
+
 private:
     bool isRunningSandbox();
     QString getSessionToken();

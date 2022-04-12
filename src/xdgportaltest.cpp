@@ -8,9 +8,11 @@
 #include "xdgportaltest.h"
 #include "ui_xdgportaltest.h"
 
+#include <QBuffer>
 #include <QDBusArgument>
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
+#include <QDBusMetaType>
 #include <QDBusUnixFileDescriptor>
 #include <QDesktopServices>
 #include <QFile>
@@ -35,6 +37,33 @@ Q_LOGGING_CATEGORY(XdgPortalTestKde, "xdg-portal-test-kde")
 
 Q_DECLARE_METATYPE(XdgPortalTest::Stream);
 Q_DECLARE_METATYPE(XdgPortalTest::Streams);
+
+struct PortalIcon {
+    QString str;
+    QDBusVariant data;
+
+    static int registerDBusType()
+    {
+        return qDBusRegisterMetaType<PortalIcon>();
+    }
+};
+Q_DECLARE_METATYPE(PortalIcon);
+
+QDBusArgument &operator<<(QDBusArgument &argument, const PortalIcon &icon)
+{
+    argument.beginStructure();
+    argument << icon.str << icon.data;
+    argument.endStructure();
+    return argument;
+}
+
+const QDBusArgument &operator>>(const QDBusArgument &argument, PortalIcon &icon)
+{
+    argument.beginStructure();
+    argument >> icon.str >> icon.data;
+    argument.endStructure();
+    return argument;
+}
 
 const QDBusArgument &operator >> (const QDBusArgument &arg, XdgPortalTest::Stream &stream)
 {
@@ -95,6 +124,7 @@ XdgPortalTest::XdgPortalTest(QWidget *parent, Qt::WindowFlags f)
     , m_requestTokenCounter(0)
 {
     QLoggingCategory::setFilterRules(QStringLiteral("xdg-portal-test-kde.debug = true"));
+    PortalIcon::registerDBusType();
 
     m_mainWindow->setupUi(this);
 
@@ -154,6 +184,12 @@ XdgPortalTest::XdgPortalTest(QWidget *parent, Qt::WindowFlags f)
     connect(m_mainWindow->screenshotButton, &QPushButton::clicked, this, &XdgPortalTest::requestScreenshot);
     connect(m_mainWindow->accountButton, &QPushButton::clicked, this, &XdgPortalTest::requestAccount);
     connect(m_mainWindow->appChooserButton, &QPushButton::clicked, this, &XdgPortalTest::chooseApplication);
+    connect(m_mainWindow->webAppButton, &QPushButton::clicked, this, &XdgPortalTest::addLauncher);
+    connect(m_mainWindow->removeWebAppButton, &QPushButton::clicked, this, &XdgPortalTest::removeLauncher);
+
+    // launcher buttons only work correctly inside sandboxes
+    m_mainWindow->webAppButton->setEnabled(isRunningSandbox());
+    m_mainWindow->removeWebAppButton->setEnabled(isRunningSandbox());
 
     connect(m_mainWindow->openFileButton, &QPushButton::clicked, this, [this] () {
         QDesktopServices::openUrl(QUrl::fromLocalFile(m_mainWindow->selectedFiles->text().split(",").first()));
@@ -758,4 +794,92 @@ void XdgPortalTest::chooseApplication()
 void XdgPortalTest::gotApplicationChoice(uint response, const QVariantMap &results)
 {
     qDebug() << response << results;
+}
+
+void XdgPortalTest::addLauncher()
+{
+    qDebug() << getSessionToken() << getRequestToken();
+    QDBusMessage message = QDBusMessage::createMethodCall(desktopPortalService(),
+                                                          desktopPortalPath(),
+                                                          QLatin1String("org.freedesktop.portal.DynamicLauncher"),
+                                                          QLatin1String("PrepareInstall"));
+
+    QBuffer buffer;
+    static constexpr auto maxSize = 512;
+    QIcon::fromTheme("utilities-terminal").pixmap(maxSize, maxSize).save(&buffer,"PNG");
+    PortalIcon icon {QStringLiteral("bytes"), QDBusVariant(buffer.buffer())};
+
+    message << parentWindowId() << QStringLiteral("Patschen")
+            << QVariant::fromValue(QDBusVariant(QVariant::fromValue(icon)))
+            << QVariantMap {{QStringLiteral("launcher_type"), 2U},
+                            {QStringLiteral("target"), QStringLiteral("https://kde.org")},
+                            {QStringLiteral("editable_icon"), true}};
+
+    QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
+    auto watcher = new QDBusPendingCallWatcher(pendingCall, this);
+    connect(watcher, &QDBusPendingCallWatcher::finished, this, [this] (QDBusPendingCallWatcher *watcher) {
+        watcher->deleteLater();
+        QDBusPendingReply<QDBusObjectPath> reply = *watcher;
+        if (reply.isError()) {
+            qWarning() << "Couldn't get reply";
+            qWarning() << "Error: " << reply.error().message();
+        } else {
+            QDBusConnection::sessionBus().connect(desktopPortalService(),
+                                                  reply.value().path(),
+                                                  portalRequestInterface(),
+                                                  portalRequestResponse(),
+                                                  this,
+                                                  SLOT(gotLauncher(uint,QVariantMap)));
+        }
+    });
+}
+
+void XdgPortalTest::gotLauncher(uint response, const QVariantMap &results)
+{
+    qDebug() << response << results;
+
+    QDBusMessage message = QDBusMessage::createMethodCall(desktopPortalService(),
+                                                          desktopPortalPath(),
+                                                          QLatin1String("org.freedesktop.portal.DynamicLauncher"),
+                                                          QLatin1String("Install"));
+
+    QFile desktopFile(":/data/patschen.desktop");
+    Q_ASSERT(desktopFile.open(QFile::ReadOnly));
+    auto data = desktopFile.readAll();
+
+    message << results.value(QStringLiteral("token")) << QStringLiteral("org.kde.xdg-portal-test-kde.patschen.desktop")
+            << QString::fromUtf8(data) << QVariantMap {};
+
+    QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
+    auto watcher = new QDBusPendingCallWatcher(pendingCall, this);
+    connect(watcher, &QDBusPendingCallWatcher::finished, this, [](QDBusPendingCallWatcher *watcher) {
+        watcher->deleteLater();
+        QDBusPendingReply<QDBusObjectPath> reply = *watcher;
+        if (reply.isError()) {
+            qWarning() << "Couldn't get reply";
+            qWarning() << "Error: " << reply.error().message();
+        }
+    });
+}
+
+void XdgPortalTest::removeLauncher()
+{
+    QDBusMessage message = QDBusMessage::createMethodCall(desktopPortalService(),
+                                                          desktopPortalPath(),
+                                                          QLatin1String("org.freedesktop.portal.DynamicLauncher"),
+                                                          QLatin1String("Uninstall"));
+
+
+    message << QStringLiteral("org.kde.xdg-portal-test-kde.patschen.desktop") << QVariantMap {};
+
+    QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
+    auto watcher = new QDBusPendingCallWatcher(pendingCall, this);
+    connect(watcher, &QDBusPendingCallWatcher::finished, this, [](QDBusPendingCallWatcher *watcher) {
+        watcher->deleteLater();
+        QDBusPendingReply<QDBusObjectPath> reply = *watcher;
+        if (reply.isError()) {
+            qWarning() << "Couldn't get reply";
+            qWarning() << "Error: " << reply.error().message();
+        }
+    });
 }

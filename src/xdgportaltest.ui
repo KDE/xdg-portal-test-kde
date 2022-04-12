@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>768</width>
-    <height>737</height>
+    <height>791</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -419,10 +419,31 @@
       </property>
      </widget>
     </item>
-    <item row="19" column="1">
+    <item row="18" column="0">
+     <widget class="QLabel" name="label_16">
+      <property name="text">
+       <string>OpenUR/AppChooser:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="18" column="1">
+     <widget class="QPushButton" name="appChooserButton">
+      <property name="text">
+       <string>Choose Application</string>
+      </property>
+     </widget>
+    </item>
+    <item row="20" column="0">
+     <widget class="QLabel" name="label_18">
+      <property name="text">
+       <string>DynamicLauncher:</string>
+      </property>
+     </widget>
+    </item>
+    <item row="23" column="1">
      <widget class="QLabel" name="accountResultsLabel"/>
     </item>
-    <item row="20" column="1">
+    <item row="24" column="1">
      <spacer name="verticalSpacer">
       <property name="orientation">
        <enum>Qt::Vertical</enum>
@@ -435,17 +456,28 @@
       </property>
      </spacer>
     </item>
-    <item row="18" column="1">
-     <widget class="QPushButton" name="appChooserButton">
-      <property name="text">
-       <string>Choose Application</string>
-      </property>
-     </widget>
+    <item row="20" column="1">
+     <layout class="QHBoxLayout" name="horizontalLayout_9">
+      <item>
+       <widget class="QPushButton" name="webAppButton">
+        <property name="text">
+         <string>Add Web Application</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="removeWebAppButton">
+        <property name="text">
+         <string>Remove Web Application</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
-    <item row="18" column="0">
-     <widget class="QLabel" name="label_16">
+    <item row="19" column="1">
+     <widget class="QLabel" name="label_19">
       <property name="text">
-       <string>OpenUR/AppChooser:</string>
+       <string>Only available inside sandbox, see build-flatpak folder and README:</string>
       </property>
      </widget>
     </item>
@@ -479,6 +511,9 @@
    <zorder>label_17</zorder>
    <zorder>appChooserButton</zorder>
    <zorder>label_16</zorder>
+   <zorder>label_18</zorder>
+   <zorder></zorder>
+   <zorder>label_19</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
