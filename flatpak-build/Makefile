@@ -4,7 +4,7 @@ FB_ARGS ?= "--user"
 TMP ?= app
 INSTALL_SOURCE ?= "--install-deps-from=flathub"
 
-build:
+build: remotes
 	flatpak-builder $(INSTALL_SOURCE) $(FB_ARGS) --arch=$(ARCH) --force-clean --require-changes --ccache --repo=$(REPO) --subject="build of org.kde.xdg-portal-test-kde, `date` (`git rev-parse HEAD`)" ${EXPORT_ARGS} $(TMP) org.kde.xdg-portal-test-kde.json
 
 export:
