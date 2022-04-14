@@ -33,6 +33,7 @@ find_package(KF5 REQUIRED
     I18n
     KIO
     Notifications
+    WindowSystem
 )
 
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0 -DQT_NO_KEYWORDS)
