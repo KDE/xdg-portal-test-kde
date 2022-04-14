@@ -101,14 +101,14 @@ XdgPortalTest::XdgPortalTest(QWidget *parent, Qt::WindowFlags f)
     m_mainWindow->sandboxLabel->setText(isRunningSandbox() ? QLatin1String("yes") : QLatin1String("no"));
     m_mainWindow->printWarning->setText(QLatin1String("Select an image in JPG format using FileChooser part!!"));
 
-    QMenuBar *menubar = new QMenuBar(this);
+    auto menubar = new QMenuBar(this);
     setMenuBar(menubar);
 
-    QMenu *menu = new QMenu(QLatin1String("File"), menubar);
+    auto menu = new QMenu(QLatin1String("File"), menubar);
     menu->addAction(QIcon::fromTheme(QLatin1String("application-exit")), QLatin1String("Quit"), qApp, &QApplication::quit);
     menubar->insertMenu(nullptr, menu);
 
-    QSystemTrayIcon *trayIcon = new QSystemTrayIcon(QIcon::fromTheme(QLatin1String("kde")), this);
+    auto trayIcon = new QSystemTrayIcon(QIcon::fromTheme(QLatin1String("kde")), this);
     trayIcon->setContextMenu(menu);
     trayIcon->show();
 
@@ -174,7 +174,7 @@ void XdgPortalTest::notificationActivated(uint action)
 
 void XdgPortalTest::openFileRequested()
 {
-    QFileDialog *fileDialog = new QFileDialog(this);
+    auto fileDialog = new QFileDialog(this);
     fileDialog->setFileMode(QFileDialog::ExistingFiles);
     fileDialog->setLabelText(QFileDialog::Accept, QLatin1String("Open (portal)"));
     fileDialog->setModal(false);
@@ -199,7 +199,7 @@ void XdgPortalTest::openFileRequested()
 
 void XdgPortalTest::openFileModalRequested()
 {
-    QFileDialog *fileDialog = new QFileDialog(this);
+    auto fileDialog = new QFileDialog(this);
     fileDialog->setFileMode(QFileDialog::ExistingFiles);
     fileDialog->setNameFilter(QLatin1String("*.txt"));
     fileDialog->setLabelText(QFileDialog::Accept, QLatin1String("Open (portal)"));
@@ -224,7 +224,7 @@ void XdgPortalTest::openFileModalRequested()
 
 void XdgPortalTest::openDirRequested()
 {
-    QFileDialog *fileDialog = new QFileDialog(this);
+    auto fileDialog = new QFileDialog(this);
     fileDialog->setFileMode(QFileDialog::Directory);
     fileDialog->setLabelText(QFileDialog::Accept, QLatin1String("Open (portal)"));
     fileDialog->setModal(false);
@@ -239,7 +239,7 @@ void XdgPortalTest::openDirRequested()
 
 void XdgPortalTest::openDirModalRequested()
 {
-    QFileDialog *fileDialog = new QFileDialog(this);
+    auto fileDialog = new QFileDialog(this);
     fileDialog->setFileMode(QFileDialog::Directory);
     fileDialog->setLabelText(QFileDialog::Accept, QLatin1String("Open (portal)"));
     fileDialog->setModal(false);
@@ -318,7 +318,7 @@ void XdgPortalTest::gotPreparePrintResponse(uint response, const QVariantMap &re
         message << parentWindowId << QLatin1String("Print dialog") << QVariant::fromValue<QDBusUnixFileDescriptor>(descriptor) << QVariantMap{{QLatin1String("token"), results.value(QLatin1String("token")).toUInt()}, { QLatin1String("handle_token"), getRequestToken() }};
 
         QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
-        QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pendingCall);
+        auto watcher = new QDBusPendingCallWatcher(pendingCall);
         connect(watcher, &QDBusPendingCallWatcher::finished, [this] (QDBusPendingCallWatcher *watcher) {
             QDBusPendingReply<QDBusObjectPath> reply = *watcher;
             if (reply.isError()) {
@@ -350,7 +350,7 @@ void XdgPortalTest::inhibitRequested()
     message << parentWindowId << (uint)8 << QVariantMap({{QLatin1String("reason"), QLatin1String("Testing inhibition")}});
 
     QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
-    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pendingCall);
+    auto watcher = new QDBusPendingCallWatcher(pendingCall);
     connect(watcher, &QDBusPendingCallWatcher::finished, [this] (QDBusPendingCallWatcher *watcher) {
         QDBusPendingReply<QDBusObjectPath> reply = *watcher;
         if (reply.isError()) {
@@ -391,7 +391,7 @@ void XdgPortalTest::printDocument()
     message << parentWindowId << QLatin1String("Prepare print") << QVariantMap() << QVariantMap() << QVariantMap{ {QLatin1String("handle_token"), getRequestToken()} };
 
     QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
-    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pendingCall);
+    auto watcher = new QDBusPendingCallWatcher(pendingCall);
     connect(watcher, &QDBusPendingCallWatcher::finished, [this] (QDBusPendingCallWatcher *watcher) {
         QDBusPendingReply<QDBusObjectPath> reply = *watcher;
         if (reply.isError()) {
@@ -422,7 +422,7 @@ void XdgPortalTest::requestDeviceAccess()
     message << (uint)QApplication::applicationPid() << QStringList {device} << QVariantMap();
 
     QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
-    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pendingCall);
+    auto watcher = new QDBusPendingCallWatcher(pendingCall);
     connect(watcher, &QDBusPendingCallWatcher::finished, [] (QDBusPendingCallWatcher *watcher) {
         QDBusPendingReply<QDBusObjectPath> reply = *watcher;
         if (reply.isError()) {
@@ -436,7 +436,7 @@ void XdgPortalTest::requestDeviceAccess()
 
 void XdgPortalTest::saveFileRequested()
 {
-    QFileDialog *fileDialog = new QFileDialog(this);
+    auto fileDialog = new QFileDialog(this);
     fileDialog->setAcceptMode(QFileDialog::AcceptSave);
     fileDialog->setLabelText(QFileDialog::Accept, QLatin1String("Save (portal)"));
     fileDialog->setNameFilters(QStringList { QLatin1String("Fooo (*.txt *.patch)"), QLatin1String("Text (*.doc *.docx)"), QLatin1String("Any file (*)") });
@@ -455,7 +455,7 @@ void XdgPortalTest::saveFileRequested()
 
 void XdgPortalTest::sendNotification()
 {
-    KNotification *notify = new KNotification(QLatin1String("notification"), this);
+    auto notify = new KNotification(QLatin1String("notification"), this);
     connect(notify, static_cast<void (KNotification::*)(uint)>(&KNotification::activated), this, &XdgPortalTest::notificationActivated);
     connect(m_mainWindow->notifyCloseButton, &QPushButton::clicked, notify, &KNotification::close);
     connect(notify, &KNotification::closed, [this] () {
@@ -474,7 +474,7 @@ void XdgPortalTest::sendNotification()
 
 void XdgPortalTest::sendNotificationPixmap()
 {
-    KNotification *notify = new KNotification(QLatin1String("notification"), this);
+    auto notify = new KNotification(QLatin1String("notification"), this);
     connect(notify, static_cast<void (KNotification::*)(uint)>(&KNotification::activated), this, &XdgPortalTest::notificationActivated);
     connect(m_mainWindow->notifyCloseButton, &QPushButton::clicked, notify, &KNotification::close);
     connect(notify, &KNotification::closed, [this] () {
@@ -505,7 +505,7 @@ void XdgPortalTest::requestScreenSharing()
     message << QVariantMap { { QLatin1String("session_handle_token"), getSessionToken() }, { QLatin1String("handle_token"), getRequestToken() } };
 
     QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
-    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pendingCall);
+    auto watcher = new QDBusPendingCallWatcher(pendingCall);
     connect(watcher, &QDBusPendingCallWatcher::finished, [this] (QDBusPendingCallWatcher *watcher) {
         QDBusPendingReply<QDBusObjectPath> reply = *watcher;
         if (reply.isError()) {
@@ -532,7 +532,7 @@ void XdgPortalTest::requestScreenshot()
     message << QLatin1String("x11:") << QVariantMap{{QLatin1String("interactive"), true}, {QLatin1String("handle_token"), getRequestToken()}};
 
     QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
-    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pendingCall);
+    auto watcher = new QDBusPendingCallWatcher(pendingCall);
     connect(watcher, &QDBusPendingCallWatcher::finished, [this] (QDBusPendingCallWatcher *watcher) {
         QDBusPendingReply<QDBusObjectPath> reply = *watcher;
         if (reply.isError()) {
@@ -559,7 +559,7 @@ void XdgPortalTest::requestAccount()
     message << QLatin1String("x11:") << QVariantMap{{QLatin1String("interactive"), true}, {QLatin1String("handle_token"), getRequestToken()}};
 
     QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
-    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pendingCall);
+    auto watcher = new QDBusPendingCallWatcher(pendingCall);
     connect(watcher, &QDBusPendingCallWatcher::finished, [this] (QDBusPendingCallWatcher *watcher) {
         QDBusPendingReply<QDBusObjectPath> reply = *watcher;
         if (reply.isError()) {
@@ -596,7 +596,7 @@ void XdgPortalTest::gotCreateSessionResponse(uint response, const QVariantMap &r
                              { QLatin1String("handle_token"), getRequestToken() } };
 
     QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
-    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pendingCall);
+    auto watcher = new QDBusPendingCallWatcher(pendingCall);
     connect(watcher, &QDBusPendingCallWatcher::finished, [this] (QDBusPendingCallWatcher *watcher) {
         QDBusPendingReply<QDBusObjectPath> reply = *watcher;
         if (reply.isError()) {
@@ -630,7 +630,7 @@ void XdgPortalTest::gotSelectSourcesResponse(uint response, const QVariantMap &r
             << QVariantMap { { QLatin1String("handle_token"), getRequestToken() } };
 
     QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
-    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(pendingCall);
+    auto watcher = new QDBusPendingCallWatcher(pendingCall);
     connect(watcher, &QDBusPendingCallWatcher::finished, [this] (QDBusPendingCallWatcher *watcher) {
         QDBusPendingReply<QDBusObjectPath> reply = *watcher;
         if (reply.isError()) {
