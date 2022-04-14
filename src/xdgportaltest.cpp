@@ -691,8 +691,9 @@ void XdgPortalTest::gotAccountResponse(uint response, const QVariantMap& results
 {
     qWarning() << "Account response: " << response << results;
     if (!response) {
-        for(auto key : results.keys()) {
         QString resultsString = QStringLiteral("Response is:\n");
+        const auto resultKeys = results.keys();
+        for (const auto &key : resultKeys) {
             resultsString += "    " + key + ": " + results.value(key).toString() + "\n";
         }
         m_mainWindow->accountResultsLabel->setText(resultsString);
