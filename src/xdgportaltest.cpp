@@ -465,7 +465,7 @@ void XdgPortalTest::sendNotification()
     notify->setFlags(KNotification::DefaultEvent);
     notify->setTitle(QLatin1String("Notification test"));
     notify->setText(QLatin1String("<html><b>Hello world!!<b><html>"));
-    notify->setActions(QStringList { i18n("Action 1"), i18n("Action 2")});
+    notify->setActions(QStringList { QStringLiteral("Action 1"), QStringLiteral("Action 2")});
     notify->setIconName(QLatin1String("applications-development"));
 
     m_mainWindow->notifyCloseButton->setEnabled(true);
@@ -484,7 +484,7 @@ void XdgPortalTest::sendNotificationPixmap()
     notify->setFlags(KNotification::DefaultEvent);
     notify->setTitle(QLatin1String("Notification test"));
     notify->setText(QLatin1String("<html><b>Hello world!!<b><html>"));
-    notify->setActions(QStringList { i18n("Action 1"), i18n("Action 2")});
+    notify->setActions(QStringList { QStringLiteral("Action 1"), QStringLiteral("Action 2")});
 
     QPixmap pixmap(64, 64);
     pixmap.fill(Qt::red);
@@ -691,8 +691,8 @@ void XdgPortalTest::gotAccountResponse(uint response, const QVariantMap& results
 {
     qWarning() << "Account response: " << response << results;
     if (!response) {
-        QString resultsString = i18n("Response is:\n");
         for(auto key : results.keys()) {
+        QString resultsString = QStringLiteral("Response is:\n");
             resultsString += "    " + key + ": " + results.value(key).toString() + "\n";
         }
         m_mainWindow->accountResultsLabel->setText(resultsString);
