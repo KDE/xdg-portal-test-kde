@@ -310,8 +310,8 @@ void XdgPortalTest::gotPreparePrintResponse(uint response, const QVariantMap &re
         const QString parentWindowId = QLatin1String("x11:") + QString::number(winId());
         QDBusUnixFileDescriptor descriptor(tempFile.handle());
 
-        QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
-                                                            QLatin1String("/org/freedesktop/portal/desktop"),
+        QDBusMessage message = QDBusMessage::createMethodCall(desktopPortalService(),
+                                                            desktopPortalPath(),
                                                             QLatin1String("org.freedesktop.portal.Print"),
                                                             QLatin1String("Print"));
 
@@ -327,8 +327,8 @@ void XdgPortalTest::gotPreparePrintResponse(uint response, const QVariantMap &re
             } else {
                 QDBusConnection::sessionBus().connect(QString(),
                                                     reply.value().path(),
-                                                    QLatin1String("org.freedesktop.portal.Request"),
-                                                    QLatin1String("Response"),
+                                                    portalRequestInterface(),
+                                                    portalRequestResponse(),
                                                     this,
                                                     SLOT(gotPrintResponse(uint,QVariantMap)));
             }
@@ -342,8 +342,8 @@ void XdgPortalTest::inhibitRequested()
 {
     const QString parentWindowId = QLatin1String("x11:") + QString::number(winId());
 
-    QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
-                                                          QLatin1String("/org/freedesktop/portal/desktop"),
+    QDBusMessage message = QDBusMessage::createMethodCall(desktopPortalService(),
+                                                          desktopPortalPath(),
                                                           QLatin1String("org.freedesktop.portal.Inhibit"),
                                                           QLatin1String("Inhibit"));
     // flags: 1 (logout) & 2 (user switch) & 4 (suspend) & 8 (idle)
@@ -368,9 +368,9 @@ void XdgPortalTest::inhibitRequested()
 
 void XdgPortalTest::uninhibitRequested()
 {
-    QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
+    QDBusMessage message = QDBusMessage::createMethodCall(desktopPortalService(),
                                                           m_inhibitionRequest.path(),
-                                                          QLatin1String("org.freedesktop.portal.Request"),
+                                                          portalRequestInterface(),
                                                           QLatin1String("Close"));
     QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
     m_mainWindow->inhibitLabel->setText(QLatin1String("Not inhibited"));
@@ -383,8 +383,8 @@ void XdgPortalTest::printDocument()
 {
     const QString parentWindowId = QLatin1String("x11:") + QString::number(winId());
 
-    QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
-                                                          QLatin1String("/org/freedesktop/portal/desktop"),
+    QDBusMessage message = QDBusMessage::createMethodCall(desktopPortalService(),
+                                                          desktopPortalPath(),
                                                           QLatin1String("org.freedesktop.portal.Print"),
                                                           QLatin1String("PreparePrint"));
     // TODO add some default configuration to verify it's read/parsed properly
@@ -400,8 +400,8 @@ void XdgPortalTest::printDocument()
         } else {
             QDBusConnection::sessionBus().connect(QString(),
                                                   reply.value().path(),
-                                                  QLatin1String("org.freedesktop.portal.Request"),
-                                                  QLatin1String("Response"),
+                                                  portalRequestInterface(),
+                                                  portalRequestResponse(),
                                                   this,
                                                   SLOT(gotPreparePrintResponse(uint,QVariantMap)));
         }
@@ -415,8 +415,8 @@ void XdgPortalTest::requestDeviceAccess()
                                                                                m_mainWindow->deviceCombobox->currentIndex() == 1 ? QLatin1String("speakers") : QLatin1String("camera");
 
 
-    QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
-                                                          QLatin1String("/org/freedesktop/portal/desktop"),
+    QDBusMessage message = QDBusMessage::createMethodCall(desktopPortalService(),
+                                                          desktopPortalPath(),
                                                           QLatin1String("org.freedesktop.portal.Device"),
                                                           QLatin1String("AccessDevice"));
     message << (uint)QApplication::applicationPid() << QStringList {device} << QVariantMap();
@@ -497,8 +497,8 @@ void XdgPortalTest::sendNotificationPixmap()
 
 void XdgPortalTest::requestScreenSharing()
 {
-    QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
-                                                          QLatin1String("/org/freedesktop/portal/desktop"),
+    QDBusMessage message = QDBusMessage::createMethodCall(desktopPortalService(),
+                                                          desktopPortalPath(),
                                                           QLatin1String("org.freedesktop.portal.ScreenCast"),
                                                           QLatin1String("CreateSession"));
 
@@ -514,8 +514,8 @@ void XdgPortalTest::requestScreenSharing()
         } else {
             QDBusConnection::sessionBus().connect(QString(),
                                                 reply.value().path(),
-                                                QLatin1String("org.freedesktop.portal.Request"),
-                                                QLatin1String("Response"),
+                                                portalRequestInterface(),
+                                                portalRequestResponse(),
                                                 this,
                                                 SLOT(gotCreateSessionResponse(uint,QVariantMap)));
         }
@@ -524,8 +524,8 @@ void XdgPortalTest::requestScreenSharing()
 
 void XdgPortalTest::requestScreenshot()
 {
-    QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
-                                                          QLatin1String("/org/freedesktop/portal/desktop"),
+    QDBusMessage message = QDBusMessage::createMethodCall(desktopPortalService(),
+                                                          desktopPortalPath(),
                                                           QLatin1String("org.freedesktop.portal.Screenshot"),
                                                           QLatin1String("Screenshot"));
     // TODO add some default configuration to verify it's read/parsed properly
@@ -541,8 +541,8 @@ void XdgPortalTest::requestScreenshot()
         } else {
             QDBusConnection::sessionBus().connect(QString(),
                                                   reply.value().path(),
-                                                  QLatin1String("org.freedesktop.portal.Request"),
-                                                  QLatin1String("Response"),
+                                                  portalRequestInterface(),
+                                                  portalRequestResponse(),
                                                   this,
                                                   SLOT(gotScreenshotResponse(uint,QVariantMap)));
         }
@@ -551,8 +551,8 @@ void XdgPortalTest::requestScreenshot()
 
 void XdgPortalTest::requestAccount()
 {
-    QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
-                                                          QLatin1String("/org/freedesktop/portal/desktop"),
+    QDBusMessage message = QDBusMessage::createMethodCall(desktopPortalService(),
+                                                          desktopPortalPath(),
                                                           QLatin1String("org.freedesktop.portal.Account"),
                                                           QLatin1String("GetUserInformation"));
     // TODO add some default configuration to verify it's read/parsed properly
@@ -568,8 +568,8 @@ void XdgPortalTest::requestAccount()
         } else {
             QDBusConnection::sessionBus().connect(QString(),
                                                   reply.value().path(),
-                                                  QLatin1String("org.freedesktop.portal.Request"),
-                                                  QLatin1String("Response"),
+                                                  portalRequestInterface(),
+                                                  portalRequestResponse(),
                                                   this,
                                                   SLOT(gotAccountResponse(uint,QVariantMap)));
         }
@@ -583,8 +583,8 @@ void XdgPortalTest::gotCreateSessionResponse(uint response, const QVariantMap &r
         return;
     }
 
-    QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
-                                                          QLatin1String("/org/freedesktop/portal/desktop"),
+    QDBusMessage message = QDBusMessage::createMethodCall(desktopPortalService(),
+                                                          desktopPortalPath(),
                                                           QLatin1String("org.freedesktop.portal.ScreenCast"),
                                                           QLatin1String("SelectSources"));
 
@@ -605,8 +605,8 @@ void XdgPortalTest::gotCreateSessionResponse(uint response, const QVariantMap &r
         } else {
             QDBusConnection::sessionBus().connect(QString(),
                                                 reply.value().path(),
-                                                QLatin1String("org.freedesktop.portal.Request"),
-                                                QLatin1String("Response"),
+                                                portalRequestInterface(),
+                                                portalRequestResponse(),
                                                 this,
                                                 SLOT(gotSelectSourcesResponse(uint,QVariantMap)));
         }
@@ -620,8 +620,8 @@ void XdgPortalTest::gotSelectSourcesResponse(uint response, const QVariantMap &r
         return;
     }
 
-    QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
-                                                          QLatin1String("/org/freedesktop/portal/desktop"),
+    QDBusMessage message = QDBusMessage::createMethodCall(desktopPortalService(),
+                                                          desktopPortalPath(),
                                                           QLatin1String("org.freedesktop.portal.ScreenCast"),
                                                           QLatin1String("Start"));
 
@@ -639,8 +639,8 @@ void XdgPortalTest::gotSelectSourcesResponse(uint response, const QVariantMap &r
         } else {
             QDBusConnection::sessionBus().connect(QString(),
                                                 reply.value().path(),
-                                                QLatin1String("org.freedesktop.portal.Request"),
-                                                QLatin1String("Response"),
+                                                portalRequestInterface(),
+                                                portalRequestResponse(),
                                                 this,
                                                 SLOT(gotStartResponse(uint,QVariantMap)));
         }
@@ -655,8 +655,8 @@ void XdgPortalTest::gotStartResponse(uint response, const QVariantMap &results)
 
     Streams streams = qdbus_cast<Streams>(results.value(QLatin1String("streams")));
     Q_FOREACH (Stream stream, streams) {
-        QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.portal.Desktop"),
-                                                              QLatin1String("/org/freedesktop/portal/desktop"),
+        QDBusMessage message = QDBusMessage::createMethodCall(desktopPortalService(),
+                                                              desktopPortalPath(),
                                                               QLatin1String("org.freedesktop.portal.ScreenCast"),
                                                               QLatin1String("OpenPipeWireRemote"));
 
