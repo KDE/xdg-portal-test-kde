@@ -347,7 +347,7 @@ void XdgPortalTest::inhibitRequested()
                                                           QLatin1String("org.freedesktop.portal.Inhibit"),
                                                           QLatin1String("Inhibit"));
     // flags: 1 (logout) & 2 (user switch) & 4 (suspend) & 8 (idle)
-    message << parentWindowId << (uint)8 << QVariantMap({{QLatin1String("reason"), QLatin1String("Testing inhibition")}});
+    message << parentWindowId << 8U << QVariantMap({{QLatin1String("reason"), QLatin1String("Testing inhibition")}});
 
     QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
     auto watcher = new QDBusPendingCallWatcher(pendingCall);
