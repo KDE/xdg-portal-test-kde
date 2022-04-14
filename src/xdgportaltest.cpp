@@ -325,7 +325,7 @@ void XdgPortalTest::gotPreparePrintResponse(uint response, const QVariantMap &re
                 qWarning() << "Couldn't get reply";
                 qWarning() << "Error: " << reply.error().message();
             } else {
-                QDBusConnection::sessionBus().connect(QString(),
+                QDBusConnection::sessionBus().connect(desktopPortalService(),
                                                     reply.value().path(),
                                                     portalRequestInterface(),
                                                     portalRequestResponse(),
@@ -398,7 +398,7 @@ void XdgPortalTest::printDocument()
             qWarning() << "Couldn't get reply";
             qWarning() << "Error: " << reply.error().message();
         } else {
-            QDBusConnection::sessionBus().connect(QString(),
+            QDBusConnection::sessionBus().connect(desktopPortalService(),
                                                   reply.value().path(),
                                                   portalRequestInterface(),
                                                   portalRequestResponse(),
@@ -512,7 +512,7 @@ void XdgPortalTest::requestScreenSharing()
             qWarning() << "Couldn't get reply";
             qWarning() << "Error: " << reply.error().message();
         } else {
-            QDBusConnection::sessionBus().connect(QString(),
+            QDBusConnection::sessionBus().connect(desktopPortalService(),
                                                 reply.value().path(),
                                                 portalRequestInterface(),
                                                 portalRequestResponse(),
@@ -539,7 +539,7 @@ void XdgPortalTest::requestScreenshot()
             qWarning() << "Couldn't get reply";
             qWarning() << "Error: " << reply.error().message();
         } else {
-            QDBusConnection::sessionBus().connect(QString(),
+            QDBusConnection::sessionBus().connect(desktopPortalService(),
                                                   reply.value().path(),
                                                   portalRequestInterface(),
                                                   portalRequestResponse(),
@@ -566,7 +566,7 @@ void XdgPortalTest::requestAccount()
             qWarning() << "Couldn't get reply";
             qWarning() << "Error: " << reply.error().message();
         } else {
-            QDBusConnection::sessionBus().connect(QString(),
+            QDBusConnection::sessionBus().connect(desktopPortalService(),
                                                   reply.value().path(),
                                                   portalRequestInterface(),
                                                   portalRequestResponse(),
@@ -603,7 +603,7 @@ void XdgPortalTest::gotCreateSessionResponse(uint response, const QVariantMap &r
             qWarning() << "Couldn't get reply";
             qWarning() << "Error: " << reply.error().message();
         } else {
-            QDBusConnection::sessionBus().connect(QString(),
+            QDBusConnection::sessionBus().connect(desktopPortalService(),
                                                 reply.value().path(),
                                                 portalRequestInterface(),
                                                 portalRequestResponse(),
@@ -637,7 +637,7 @@ void XdgPortalTest::gotSelectSourcesResponse(uint response, const QVariantMap &r
             qWarning() << "Couldn't get reply";
             qWarning() << "Error: " << reply.error().message();
         } else {
-            QDBusConnection::sessionBus().connect(QString(),
+            QDBusConnection::sessionBus().connect(desktopPortalService(),
                                                 reply.value().path(),
                                                 portalRequestInterface(),
                                                 portalRequestResponse(),
