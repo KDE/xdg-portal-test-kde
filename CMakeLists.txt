@@ -36,6 +36,7 @@ find_package(KF5 REQUIRED
     KIO
     Notifications
     WindowSystem
+    Wayland
 )
 
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0 -DQT_NO_KEYWORDS)

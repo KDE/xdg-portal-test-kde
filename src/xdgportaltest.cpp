@@ -27,6 +27,9 @@
 
 #include <KNotification>
 #include <KRun>
+#include <KWayland/Client/connection_thread.h>
+#include <KWayland/Client/registry.h>
+#include <KWayland/Client/xdgforeign.h>
 #include <KWindowSystem>
 
 #include <gst/gst.h>
@@ -108,7 +111,11 @@ QString XdgPortalTest::parentWindowId() const
     switch (KWindowSystem::platform()) {
     case KWindowSystem::Platform::X11:
         return QLatin1String("x11:") + QString::number(winId());
-    // TODO case KWindowSystem::Platform::Wayland:
+    case KWindowSystem::Platform::Wayland:
+        if (!m_xdgExported) {
+            return {};
+        }
+        return QLatin1String("wayland:") + m_xdgExported->handle();
     case KWindowSystem::Platform::Unknown:
         break;
     }
@@ -194,6 +201,8 @@ XdgPortalTest::XdgPortalTest(QWidget *parent, Qt::WindowFlags f)
     });
 
     gst_init(nullptr, nullptr);
+
+    initWayland();
 }
 
 void XdgPortalTest::notificationActivated(uint action)
@@ -876,3 +885,27 @@ void XdgPortalTest::removeLauncher()
         }
     });
 }
+
+void XdgPortalTest::initWayland()
+{
+    auto connection = KWayland::Client::ConnectionThread::fromApplication(QGuiApplication::instance());
+
+    if (!connection) {
+        return;
+    }
+
+    auto registry = new KWayland::Client::Registry(this);
+
+    connect(registry,
+            &KWayland::Client::Registry::exporterUnstableV2Announced,
+            this,
+            [this, registry](quint32 name, quint32 version) {
+                auto exporter = registry->createXdgExporter(name, std::min(version, quint32(1)), this);
+                auto surface = KWayland::Client::Surface::fromWindow(windowHandle());
+                m_xdgExported = exporter->exportTopLevel(surface, this);
+            });
+
+    registry->create(connection);
+    registry->setup();
+}
+

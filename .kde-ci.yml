@@ -8,3 +8,4 @@ Dependencies:
     'frameworks/ki18n': '@stable'
     'frameworks/knotifications': '@stable'
     'frameworks/kio': '@stable'
+    'frameworks/kwayland': '@stable'
