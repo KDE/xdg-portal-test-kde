@@ -32,7 +32,7 @@ public:
     } Stream;
     typedef QList<Stream> Streams;
 
-    XdgPortalTest(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
+    explicit XdgPortalTest(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
     ~XdgPortalTest();
 
 public Q_SLOTS:
