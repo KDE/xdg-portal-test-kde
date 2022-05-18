@@ -5,8 +5,7 @@
  * SPDX-FileCopyrightText: 2022 Harald Sitter <sitter@kde.org>
  */
 
-#ifndef XDG_PORTAL_TEST_KDE_H
-#define XDG_PORTAL_TEST_KDE_H
+#pragma once
 
 #include <memory>
 
@@ -20,7 +19,7 @@ class QDBusMessage;
 namespace Ui
 {
 class XdgPortalTest;
-}
+} // namespace Ui
 
 Q_DECLARE_LOGGING_CATEGORY(XdgPortalTestKde)
 
@@ -28,11 +27,11 @@ class XdgPortalTest : public QMainWindow
 {
     Q_OBJECT
 public:
-    typedef struct {
+    struct Stream {
         uint node_id;
         QVariantMap map;
-    } Stream;
-    typedef QList<Stream> Streams;
+    } ;
+    using Streams = QList<Stream>;
 
     explicit XdgPortalTest(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
 
@@ -78,7 +77,3 @@ private:
     uint m_sessionTokenCounter;
     uint m_requestTokenCounter;
 };
-
-#endif // XDG_PORTAL_TEST_KDE_H
-
-
