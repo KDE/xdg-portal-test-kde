@@ -8,6 +8,8 @@
 #ifndef XDG_PORTAL_TEST_KDE_H
 #define XDG_PORTAL_TEST_KDE_H
 
+#include <memory>
+
 #include <QDBusObjectPath>
 #include <QFlags>
 #include <QLoggingCategory>
@@ -33,7 +35,6 @@ public:
     typedef QList<Stream> Streams;
 
     explicit XdgPortalTest(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
-    ~XdgPortalTest();
 
 public Q_SLOTS:
     void gotCreateSessionResponse(uint response, const QVariantMap &results);
@@ -73,7 +74,7 @@ private:
 
     QDBusObjectPath m_inhibitionRequest;
     QString m_session;
-    Ui::XdgPortalTest * m_mainWindow;
+    std::unique_ptr<Ui::XdgPortalTest> m_mainWindow;
     uint m_sessionTokenCounter;
     uint m_requestTokenCounter;
 };

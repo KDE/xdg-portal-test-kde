@@ -118,7 +118,7 @@ QString XdgPortalTest::parentWindowId() const
 
 XdgPortalTest::XdgPortalTest(QWidget *parent, Qt::WindowFlags f)
     : QMainWindow(parent, f)
-    , m_mainWindow(new Ui::XdgPortalTest)
+    , m_mainWindow(std::make_unique<Ui::XdgPortalTest>())
     , m_sessionTokenCounter(0)
     , m_requestTokenCounter(0)
 {
@@ -195,11 +195,6 @@ XdgPortalTest::XdgPortalTest(QWidget *parent, Qt::WindowFlags f)
     });
 
     gst_init(nullptr, nullptr);
-}
-
-XdgPortalTest::~XdgPortalTest()
-{
-    delete m_mainWindow;
 }
 
 void XdgPortalTest::notificationActivated(uint action)
