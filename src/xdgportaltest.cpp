@@ -6,7 +6,6 @@
  */
 
 #include "xdgportaltest.h"
-#include "ui_xdgportaltest.h"
 
 #include <QBuffer>
 #include <QDBusArgument>

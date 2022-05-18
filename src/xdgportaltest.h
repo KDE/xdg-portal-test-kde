@@ -14,6 +14,8 @@
 #include <QLoggingCategory>
 #include <QMainWindow>
 
+#include "ui_xdgportaltest.h"
+
 class QDBusMessage;
 
 namespace Ui
