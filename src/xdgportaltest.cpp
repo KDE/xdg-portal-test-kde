@@ -25,11 +25,10 @@
 #include <QSystemTrayIcon>
 #include <QTemporaryFile>
 #include <QWindow>
-#include <KRun>
-#include <QDesktopServices>
 
-#include <KWindowSystem>
 #include <KNotification>
+#include <KRun>
+#include <KWindowSystem>
 
 #include <gst/gst.h>
 
