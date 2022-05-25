@@ -34,6 +34,8 @@
 
 #include <gst/gst.h>
 
+#include "dropsite/dropsitewindow.h"
+
 Q_LOGGING_CATEGORY(XdgPortalTestKde, "xdg-portal-test-kde")
 
 Q_DECLARE_METATYPE(XdgPortalTest::Stream);
@@ -132,6 +134,10 @@ XdgPortalTest::XdgPortalTest(QWidget *parent, Qt::WindowFlags f)
     PortalIcon::registerDBusType();
 
     m_mainWindow->setupUi(this);
+
+    auto dropSiteLayout = new QVBoxLayout(m_mainWindow->dropSite);
+    auto dropSite = new DropSiteWindow(m_mainWindow->dropSite);
+    dropSiteLayout->addWidget(dropSite);
 
     m_mainWindow->sandboxLabel->setText(isRunningSandbox() ? QLatin1String("yes") : QLatin1String("no"));
     m_mainWindow->printWarning->setText(QLatin1String("Select an image in JPG format using FileChooser part!!"));

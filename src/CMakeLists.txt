@@ -2,6 +2,8 @@ set(xdg_portal_test_kde_SRCS
     main.cpp
     xdgportaltest.cpp
     data/data.qrc
+    dropsite/dropsitewindow.cpp
+    dropsite/droparea.cpp
 )
 
 ki18n_wrap_ui(xdg_portal_test_kde_SRCS
