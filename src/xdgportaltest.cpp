@@ -26,7 +26,7 @@
 #include <QWindow>
 
 #include <KNotification>
-#include <KRun>
+#include <KIO/OpenUrlJob>
 #include <KWayland/Client/connection_thread.h>
 #include <KWayland/Client/registry.h>
 #include <KWayland/Client/xdgforeign.h>
@@ -45,9 +45,9 @@ struct PortalIcon {
     QString str;
     QDBusVariant data;
 
-    static int registerDBusType()
+    static void registerDBusType()
     {
-        return qDBusRegisterMetaType<PortalIcon>();
+        qDBusRegisterMetaType<PortalIcon>();
     }
 };
 Q_DECLARE_METATYPE(PortalIcon);
@@ -175,7 +175,8 @@ XdgPortalTest::XdgPortalTest(QWidget *parent, Qt::WindowFlags f)
     });
 
     connect(m_mainWindow->krun, &QPushButton::clicked, this, [this] {
-        new KRun(m_mainWindow->kurlrequester->url(), this);
+        auto job = new KIO::OpenUrlJob(m_mainWindow->kurlrequester->url());
+        job->start();
     });
     connect(m_mainWindow->openurl, &QPushButton::clicked, this, [this] {
         QDesktopServices::openUrl(m_mainWindow->kurlrequester->url());
@@ -499,7 +500,8 @@ void XdgPortalTest::saveFileRequested()
 
 void XdgPortalTest::sendNotification()
 {
-    auto notify = new KNotification(QLatin1String("notification"), this);
+    auto notify = new KNotification(QLatin1String("notification"));
+    notify->setWidget(this);
     connect(notify, static_cast<void (KNotification::*)(uint)>(&KNotification::activated), this, &XdgPortalTest::notificationActivated);
     connect(m_mainWindow->notifyCloseButton, &QPushButton::clicked, notify, &KNotification::close);
     connect(notify, &KNotification::closed, this, [this] () {
@@ -518,7 +520,8 @@ void XdgPortalTest::sendNotification()
 
 void XdgPortalTest::sendNotificationPixmap()
 {
-    auto notify = new KNotification(QLatin1String("notification"), this);
+    auto notify = new KNotification(QLatin1String("notification"));
+    notify->setWidget(this);
     connect(notify, static_cast<void (KNotification::*)(uint)>(&KNotification::activated), this, &XdgPortalTest::notificationActivated);
     connect(m_mainWindow->notifyCloseButton, &QPushButton::clicked, notify, &KNotification::close);
     connect(notify, &KNotification::closed, this, [this] () {

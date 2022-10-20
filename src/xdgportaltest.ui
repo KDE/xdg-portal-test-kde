@@ -112,7 +112,7 @@
        <item>
         <widget class="QPushButton" name="krun">
          <property name="text">
-          <string>KRun</string>
+          <string>KIO::OpenUrlJob</string>
          </property>
         </widget>
        </item>
