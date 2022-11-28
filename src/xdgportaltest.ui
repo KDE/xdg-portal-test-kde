@@ -230,6 +230,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="notifyWithDefault">
+         <property name="text">
+          <string>Notification with Default</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="notificationResponse">
          <property name="text">
           <string/>

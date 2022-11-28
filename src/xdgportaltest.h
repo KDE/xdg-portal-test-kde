@@ -66,6 +66,7 @@ public Q_SLOTS:
     void saveFileRequested();
     void sendNotification();
     void sendNotificationPixmap();
+    void sendNotificationDefault();
     void requestScreenSharing();
     void requestScreenshot();
     void requestAccount();

@@ -190,6 +190,7 @@ XdgPortalTest::XdgPortalTest(QWidget *parent, Qt::WindowFlags f)
     connect(m_mainWindow->openDirModal, &QPushButton::clicked, this, &XdgPortalTest::openDirModalRequested);
     connect(m_mainWindow->notifyButton, &QPushButton::clicked, this, &XdgPortalTest::sendNotification);
     connect(m_mainWindow->notifyPixmapButton, &QPushButton::clicked, this, &XdgPortalTest::sendNotificationPixmap);
+    connect(m_mainWindow->notifyWithDefault, &QPushButton::clicked, this, &XdgPortalTest::sendNotificationDefault);
     connect(m_mainWindow->printButton, &QPushButton::clicked, this, &XdgPortalTest::printDocument);
     connect(m_mainWindow->requestDeviceAccess, &QPushButton::clicked, this, &XdgPortalTest::requestDeviceAccess);
     connect(m_mainWindow->screenShareButton, &QPushButton::clicked, this, &XdgPortalTest::requestScreenSharing);
@@ -537,6 +538,26 @@ void XdgPortalTest::sendNotificationPixmap()
     pixmap.fill(Qt::red);
 
     notify->setPixmap(pixmap);
+
+    m_mainWindow->notifyCloseButton->setEnabled(true);
+    notify->sendEvent();
+}
+
+void XdgPortalTest::sendNotificationDefault()
+{
+    auto notify = new KNotification(QLatin1String("notification"));
+    notify->setWidget(this);
+    connect(notify, qOverload<uint>(&KNotification::activated), this, &XdgPortalTest::notificationActivated);
+    connect(m_mainWindow->notifyCloseButton, &QPushButton::clicked, notify, &KNotification::close);
+    connect(notify, &KNotification::closed, this, [this] () {
+        m_mainWindow->notifyCloseButton->setDisabled(true);
+    });
+
+    notify->setFlags(KNotification::DefaultEvent);
+    notify->setTitle(QLatin1String("Notification test"));
+    notify->setText(QLatin1String("<html><b>Hello world!!<b><html>"));
+    notify->setActions(QStringList { QStringLiteral("Action 1"), QStringLiteral("Action 2")});
+    notify->setDefaultAction(QStringLiteral("banana"));
 
     m_mainWindow->notifyCloseButton->setEnabled(true);
     notify->sendEvent();
