@@ -14,6 +14,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
+    KLocalizedString::setApplicationDomain("xdg-portal-test-kde");
     KAboutData about(QStringLiteral("xdg-portal-test-kde"), QStringLiteral("Portal Test KDE"), QString());
     KAboutData::setApplicationData(about);
 
