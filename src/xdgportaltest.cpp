@@ -400,7 +400,6 @@ void XdgPortalTest::gotPreparePrintResponse(uint response, const QVariantMap &re
         painter.end();
 
         // Send it back for printing
-        const QString parentWindowId = QLatin1String("x11:") + QString::number(winId());
         QDBusUnixFileDescriptor descriptor(tempFile.handle());
 
         QDBusMessage message = QDBusMessage::createMethodCall(desktopPortalService(),
@@ -408,7 +407,7 @@ void XdgPortalTest::gotPreparePrintResponse(uint response, const QVariantMap &re
                                                             QLatin1String("org.freedesktop.portal.Print"),
                                                             QLatin1String("Print"));
 
-        message << parentWindowId << QLatin1String("Print dialog") << QVariant::fromValue<QDBusUnixFileDescriptor>(descriptor) << QVariantMap{{QLatin1String("token"), results.value(QLatin1String("token")).toUInt()}, { QLatin1String("handle_token"), getRequestToken() }};
+        message << parentWindowId() << QLatin1String("Print dialog") << QVariant::fromValue<QDBusUnixFileDescriptor>(descriptor) << QVariantMap{{QLatin1String("token"), results.value(QLatin1String("token")).toUInt()}, { QLatin1String("handle_token"), getRequestToken() }};
 
         QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
         auto watcher = new QDBusPendingCallWatcher(pendingCall);
@@ -433,14 +432,12 @@ void XdgPortalTest::gotPreparePrintResponse(uint response, const QVariantMap &re
 
 void XdgPortalTest::inhibitRequested()
 {
-    const QString parentWindowId = QLatin1String("x11:") + QString::number(winId());
-
     QDBusMessage message = QDBusMessage::createMethodCall(desktopPortalService(),
                                                           desktopPortalPath(),
                                                           QLatin1String("org.freedesktop.portal.Inhibit"),
                                                           QLatin1String("Inhibit"));
     // flags: 1 (logout) & 2 (user switch) & 4 (suspend) & 8 (idle)
-    message << parentWindowId << 8U << QVariantMap({{QLatin1String("reason"), QLatin1String("Testing inhibition")}});
+    message << parentWindowId() << 8U << QVariantMap({{QLatin1String("reason"), QLatin1String("Testing inhibition")}});
 
     QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
     auto watcher = new QDBusPendingCallWatcher(pendingCall);
@@ -474,14 +471,12 @@ void XdgPortalTest::uninhibitRequested()
 
 void XdgPortalTest::printDocument()
 {
-    const QString parentWindowId = QLatin1String("x11:") + QString::number(winId());
-
     QDBusMessage message = QDBusMessage::createMethodCall(desktopPortalService(),
                                                           desktopPortalPath(),
                                                           QLatin1String("org.freedesktop.portal.Print"),
                                                           QLatin1String("PreparePrint"));
     // TODO add some default configuration to verify it's read/parsed properly
-    message << parentWindowId << QLatin1String("Prepare print") << QVariantMap() << QVariantMap() << QVariantMap{ {QLatin1String("handle_token"), getRequestToken()} };
+    message << parentWindowId() << QLatin1String("Prepare print") << QVariantMap() << QVariantMap() << QVariantMap{ {QLatin1String("handle_token"), getRequestToken()} };
 
     QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
     auto watcher = new QDBusPendingCallWatcher(pendingCall);
@@ -645,7 +640,7 @@ void XdgPortalTest::requestScreenshot()
                                                           QLatin1String("org.freedesktop.portal.Screenshot"),
                                                           QLatin1String("Screenshot"));
     // TODO add some default configuration to verify it's read/parsed properly
-    message << QLatin1String("x11:") << QVariantMap{{QLatin1String("interactive"), true}, {QLatin1String("handle_token"), getRequestToken()}};
+    message << parentWindowId() << QVariantMap{{QLatin1String("interactive"), true}, {QLatin1String("handle_token"), getRequestToken()}};
 
     QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
     auto watcher = new QDBusPendingCallWatcher(pendingCall);
@@ -672,7 +667,7 @@ void XdgPortalTest::requestAccount()
                                                           QLatin1String("org.freedesktop.portal.Account"),
                                                           QLatin1String("GetUserInformation"));
     // TODO add some default configuration to verify it's read/parsed properly
-    message << QLatin1String("x11:") << QVariantMap{{QLatin1String("interactive"), true}, {QLatin1String("handle_token"), getRequestToken()}};
+    message << parentWindowId() << QVariantMap{{QLatin1String("interactive"), true}, {QLatin1String("handle_token"), getRequestToken()}};
 
     QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
     auto watcher = new QDBusPendingCallWatcher(pendingCall);
@@ -742,7 +737,7 @@ void XdgPortalTest::gotSelectSourcesResponse(uint response, const QVariantMap &r
                                                           QLatin1String("Start"));
 
     message << QVariant::fromValue(QDBusObjectPath(m_session))
-            << QString() // parent_window
+            << parentWindowId()
             << QVariantMap { { QLatin1String("handle_token"), getRequestToken() } };
 
     QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
