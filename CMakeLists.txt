@@ -21,10 +21,12 @@ find_package(GLIB2 REQUIRED)
 
 pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0)
 
+find_package(Wayland 1.15 REQUIRED COMPONENTS Client)
 find_package(Qt6 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
     Core
     DBus
     Widgets
+    WaylandClient
 )
 
 find_package(KF6 REQUIRED
@@ -34,7 +36,15 @@ find_package(KF6 REQUIRED
     WindowSystem
 )
 
-find_package(KWayland REQUIRED)
+find_package(WaylandProtocols 1.25)
+set_package_properties(WaylandProtocols PROPERTIES
+    TYPE REQUIRED
+    PURPOSE "Collection of Wayland protocols that add functionality not available in the Wayland core protocol"
+    URL "https://gitlab.freedesktop.org/wayland/wayland-protocols/"
+)
+
+find_package(QtWaylandScanner REQUIRED)
+
 find_package(Wayland REQUIRED Client)
 
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0 -DQT_NO_KEYWORDS)

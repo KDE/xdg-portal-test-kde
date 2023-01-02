@@ -11,6 +11,7 @@
 
 #include <QDBusObjectPath>
 #include <QFlags>
+#include <QPointer>
 #include <QLoggingCategory>
 #include <QMainWindow>
 
@@ -24,16 +25,10 @@ namespace Ui
 class XdgPortalTest;
 } // namespace Ui
 
-namespace KWayland
-{
-namespace Client
-{
-class XdgExporter;
-class XdgExported;
-} // namespace Client
-} // namespace KWayland
-
 Q_DECLARE_LOGGING_CATEGORY(XdgPortalTestKde)
+
+class XdgExporterV2;
+class XdgExportedV2;
 
 class XdgPortalTest : public QMainWindow
 {
@@ -46,6 +41,7 @@ public:
     using Streams = QList<Stream>;
 
     explicit XdgPortalTest(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
+    ~XdgPortalTest();
 
 public Q_SLOTS:
     void gotCreateSessionResponse(uint response, const QVariantMap &results);
@@ -86,15 +82,14 @@ private:
     QString getRequestToken();
     QString parentWindowId() const;
 
-    void initWayland();
-
     QDBusObjectPath m_inhibitionRequest;
     QString m_session;
     std::unique_ptr<Ui::XdgPortalTest> m_mainWindow;
     uint m_sessionTokenCounter;
     uint m_requestTokenCounter;
 
-    KWayland::Client::XdgExported *m_xdgExported = nullptr;
+    QScopedPointer<XdgExporterV2> m_xdgExporter;
+    QPointer<XdgExportedV2> m_xdgExported;
     QString m_globalShortcutsSessionToken;
     QDBusObjectPath m_globalShortcutsSession;
     OrgFreedesktopPortalGlobalShortcutsInterface *m_shortcuts;

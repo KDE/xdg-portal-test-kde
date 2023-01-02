@@ -27,16 +27,16 @@
 
 #include <KIO/OpenUrlJob>
 #include <KNotification>
-#include <KWayland/Client/connection_thread.h>
-#include <KWayland/Client/registry.h>
-#include <KWayland/Client/xdgforeign.h>
 #include <KWindowSystem>
 
 #include <gst/gst.h>
+#include <optional>
 
 #include "dropsite/dropsitewindow.h"
 #include <globalshortcuts_portal_interface.h>
 #include <portalsrequest_interface.h>
+
+#include "xdgexporterv2.h"
 
 Q_LOGGING_CATEGORY(XdgPortalTestKde, "xdg-portal-test-kde")
 
@@ -120,9 +120,10 @@ QString XdgPortalTest::parentWindowId() const
         return QLatin1String("x11:") + QString::number(winId());
     case KWindowSystem::Platform::Wayland:
         if (!m_xdgExported) {
+            qDebug() << "nope!";
             return {};
         }
-        return QLatin1String("wayland:") + m_xdgExported->handle();
+        return QLatin1String("wayland:") + *m_xdgExported->handle();
     case KWindowSystem::Platform::Unknown:
         break;
     }
@@ -255,7 +256,12 @@ XdgPortalTest::XdgPortalTest(QWidget *parent, Qt::WindowFlags f)
 
     gst_init(nullptr, nullptr);
 
-    initWayland();
+    m_xdgExporter.reset(new XdgExporterV2);
+    m_xdgExported = m_xdgExporter->exportWidget(this);
+}
+
+XdgPortalTest::~XdgPortalTest()
+{
 }
 
 void XdgPortalTest::notificationActivated(const QString &action)
@@ -973,29 +979,6 @@ void XdgPortalTest::removeLauncher()
             qWarning() << "Error: " << reply.error().message();
         }
     });
-}
-
-void XdgPortalTest::initWayland()
-{
-    auto connection = KWayland::Client::ConnectionThread::fromApplication(QGuiApplication::instance());
-
-    if (!connection) {
-        return;
-    }
-
-    auto registry = new KWayland::Client::Registry(this);
-
-    connect(registry,
-            &KWayland::Client::Registry::exporterUnstableV2Announced,
-            this,
-            [this, registry](quint32 name, quint32 version) {
-                auto exporter = registry->createXdgExporter(name, std::min(version, quint32(1)), this);
-                auto surface = KWayland::Client::Surface::fromWindow(windowHandle());
-                m_xdgExported = exporter->exportTopLevel(surface, this);
-            });
-
-    registry->create(connection);
-    registry->setup();
 }
 
 void XdgPortalTest::gotGlobalShortcutsCreateSessionResponse(uint res, const QVariantMap& results)
