@@ -31,7 +31,7 @@ find_package(Qt${QT_MAJOR_VERSION} ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
     Widgets
 )
 
-find_package(KF5 REQUIRED
+find_package(KF${QT_MAJOR_VERSION} REQUIRED
     I18n
     KIO
     Notifications

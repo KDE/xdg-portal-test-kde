@@ -21,11 +21,11 @@ target_link_libraries(xdg-portal-test-kde
     Qt::Core
     Qt::DBus
     Qt::Widgets
-    KF5::I18n
-    KF5::KIOFileWidgets
-    KF5::Notifications
-    KF5::WindowSystem
-    KF5::WaylandClient
+    KF${QT_MAJOR_VERSION}::I18n
+    KF${QT_MAJOR_VERSION}::KIOFileWidgets
+    KF${QT_MAJOR_VERSION}::Notifications
+    KF${QT_MAJOR_VERSION}::WindowSystem
+    KF${QT_MAJOR_VERSION}::WaylandClient
     GLIB2::GLIB2
     ${GSTREAMER_LIBRARIES}
 )

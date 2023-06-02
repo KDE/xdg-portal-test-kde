@@ -2,10 +2,18 @@
 # SPDX-License-Identifier: CC0-1.0
 
 Dependencies:
-- 'on': ['@all']
+- 'on': ['Linux/Qt5']
   'require':
     'frameworks/extra-cmake-modules': '@stable'
     'frameworks/ki18n': '@stable'
     'frameworks/knotifications': '@stable'
     'frameworks/kio': '@stable'
     'frameworks/kwayland': '@stable'
+
+- 'on': ['Linux/Qt6']
+  'require':
+    'frameworks/extra-cmake-modules': '@latest-kf6'
+    'frameworks/ki18n': '@latest-kf6'
+    'frameworks/knotifications': '@latest-kf6'
+    'frameworks/kio': '@latest-kf6'
+    'frameworks/kwayland': '@latest-kf6'

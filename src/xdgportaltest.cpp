@@ -25,7 +25,6 @@
 #include <QTemporaryFile>
 #include <QWindow>
 #include <KWindowSystem>
-#include <KStandardAction>
 
 #include <KNotification>
 #include <KIO/OpenUrlJob>
@@ -765,7 +764,7 @@ void XdgPortalTest::gotStartResponse(uint response, const QVariantMap &results)
     }
 
     Streams streams = qdbus_cast<Streams>(results.value(QLatin1String("streams")));
-    Q_FOREACH (Stream stream, streams) {
+    for (const auto &stream : streams) {
         QDBusMessage message = QDBusMessage::createMethodCall(desktopPortalService(),
                                                               desktopPortalPath(),
                                                               QLatin1String("org.freedesktop.portal.ScreenCast"),
