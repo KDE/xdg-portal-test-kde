@@ -544,7 +544,6 @@ void XdgPortalTest::saveFileRequested()
 void XdgPortalTest::sendNotification()
 {
     auto notify = new KNotification(QLatin1String("notification"));
-    notify->setWidget(this);
     connect(notify, static_cast<void (KNotification::*)(uint)>(&KNotification::activated), this, &XdgPortalTest::notificationActivated);
     connect(m_mainWindow->notifyCloseButton, &QPushButton::clicked, notify, &KNotification::close);
     connect(notify, &KNotification::closed, this, [this] () {
@@ -564,7 +563,6 @@ void XdgPortalTest::sendNotification()
 void XdgPortalTest::sendNotificationPixmap()
 {
     auto notify = new KNotification(QLatin1String("notification"));
-    notify->setWidget(this);
     connect(notify, static_cast<void (KNotification::*)(uint)>(&KNotification::activated), this, &XdgPortalTest::notificationActivated);
     connect(m_mainWindow->notifyCloseButton, &QPushButton::clicked, notify, &KNotification::close);
     connect(notify, &KNotification::closed, this, [this] () {
@@ -588,7 +586,6 @@ void XdgPortalTest::sendNotificationPixmap()
 void XdgPortalTest::sendNotificationDefault()
 {
     auto notify = new KNotification(QLatin1String("notification"));
-    notify->setWidget(this);
     connect(notify, qOverload<uint>(&KNotification::activated), this, &XdgPortalTest::notificationActivated);
     connect(m_mainWindow->notifyCloseButton, &QPushButton::clicked, notify, &KNotification::close);
     connect(notify, &KNotification::closed, this, [this] () {
