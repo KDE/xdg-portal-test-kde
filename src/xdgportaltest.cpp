@@ -24,10 +24,9 @@
 #include <QSystemTrayIcon>
 #include <QTemporaryFile>
 #include <QWindow>
-#include <KWindowSystem>
 
-#include <KNotification>
 #include <KIO/OpenUrlJob>
+#include <KNotification>
 #include <KWayland/Client/connection_thread.h>
 #include <KWayland/Client/registry.h>
 #include <KWayland/Client/xdgforeign.h>
