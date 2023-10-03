@@ -8,14 +8,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ################# set KDE specific information #################
 
-find_package(ECM 1.3.0 REQUIRED NO_MODULE)
+find_package(ECM 5.102.0 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH})
 
 include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
 
-include(ECMPackageConfigHelpers)
+include(CMakePackageConfigHelpers)
 include(ECMOptionalAddSubdirectory)
 include(FeatureSummary)
 
