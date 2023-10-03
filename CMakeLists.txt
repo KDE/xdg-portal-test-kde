@@ -14,11 +14,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH})
 include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
-
-include(CMakePackageConfigHelpers)
-include(ECMOptionalAddSubdirectory)
 include(FeatureSummary)
-
 include(FindPkgConfig)
 
 find_package(GLIB2 REQUIRED)
