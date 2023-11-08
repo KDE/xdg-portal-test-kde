@@ -8,7 +8,7 @@ Dependencies:
     'frameworks/ki18n': '@stable'
     'frameworks/knotifications': '@stable'
     'frameworks/kio': '@stable'
-    'frameworks/kwayland': '@stable'
+    'plasma/kwayland': '@stable'
 
 - 'on': ['Linux/Qt6']
   'require':
@@ -16,4 +16,4 @@ Dependencies:
     'frameworks/ki18n': '@latest-kf6'
     'frameworks/knotifications': '@latest-kf6'
     'frameworks/kio': '@latest-kf6'
-    'frameworks/kwayland': '@latest-kf6'
+    'plasma/kwayland': '@latest-kf6'
