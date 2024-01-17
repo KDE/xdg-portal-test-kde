@@ -4,7 +4,7 @@ A simple test application for [Flatpak](http://www.flatpak.org) portals and Qt f
 
 The portal interfaces are defined in [xdg-desktop-portal](https://github.com/flatpak/xdg-desktop-portal).
 
-A Qt/KDE implementation can be found in [xdg-desktop-portal-kde](https://invent.kde.org/libraries/xdg-portal-test-kde).
+A Qt/KDE implementation can be found in [xdg-desktop-portal-kde](https://invent.kde.org/plasma/xdg-desktop-portal-kde/).
 
 To produce a flatpak of xdg-portal-test-kde run the following:
 
