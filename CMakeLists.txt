@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(xdg-portal-test-kde)
 
-set(QT_MIN_VERSION "5.15.2")
+set(QT_MIN_VERSION "6.6")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -32,8 +32,10 @@ find_package(KF${QT_MAJOR_VERSION} REQUIRED
     KIO
     Notifications
     WindowSystem
-    Wayland
 )
+
+find_package(KWayland REQUIRED)
+find_package(Wayland REQUIRED Client)
 
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0 -DQT_NO_KEYWORDS)
 add_definitions(-DQT_USE_FAST_CONCATENATION -DQT_USE_FAST_OPERATOR_PLUS)

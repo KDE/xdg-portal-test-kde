@@ -258,9 +258,9 @@ XdgPortalTest::XdgPortalTest(QWidget *parent, Qt::WindowFlags f)
     initWayland();
 }
 
-void XdgPortalTest::notificationActivated(uint action)
+void XdgPortalTest::notificationActivated(const QString &action)
 {
-    m_mainWindow->notificationResponse->setText(QString("Action number %1 activated").arg(QString::number(action)));
+    m_mainWindow->notificationResponse->setText(QString("%1 activated").arg(action));
 }
 
 void XdgPortalTest::openFileRequested()
@@ -543,7 +543,6 @@ void XdgPortalTest::saveFileRequested()
 void XdgPortalTest::sendNotification()
 {
     auto notify = new KNotification(QLatin1String("notification"));
-    connect(notify, static_cast<void (KNotification::*)(uint)>(&KNotification::activated), this, &XdgPortalTest::notificationActivated);
     connect(m_mainWindow->notifyCloseButton, &QPushButton::clicked, notify, &KNotification::close);
     connect(notify, &KNotification::closed, this, [this] () {
         m_mainWindow->notifyCloseButton->setDisabled(true);
@@ -552,7 +551,14 @@ void XdgPortalTest::sendNotification()
     notify->setFlags(KNotification::DefaultEvent);
     notify->setTitle(QLatin1String("Notification test"));
     notify->setText(QLatin1String("<html><b>Hello world!!<b><html>"));
-    notify->setActions(QStringList { QStringLiteral("Action 1"), QStringLiteral("Action 2")});
+    KNotificationAction *action1 = notify->addAction(QStringLiteral("Action 1"));
+    KNotificationAction *action2 = notify->addAction(QStringLiteral("Action 2"));
+    connect(action1, &KNotificationAction::activated, this, [this, action1] () {
+        this->notificationActivated(action1->label());
+    });
+    connect(action2, &KNotificationAction::activated, this, [this, action2] () {
+        this->notificationActivated(action2->label());
+    });
     notify->setIconName(QLatin1String("applications-development"));
 
     m_mainWindow->notifyCloseButton->setEnabled(true);
@@ -562,7 +568,6 @@ void XdgPortalTest::sendNotification()
 void XdgPortalTest::sendNotificationPixmap()
 {
     auto notify = new KNotification(QLatin1String("notification"));
-    connect(notify, static_cast<void (KNotification::*)(uint)>(&KNotification::activated), this, &XdgPortalTest::notificationActivated);
     connect(m_mainWindow->notifyCloseButton, &QPushButton::clicked, notify, &KNotification::close);
     connect(notify, &KNotification::closed, this, [this] () {
         m_mainWindow->notifyCloseButton->setDisabled(true);
@@ -571,7 +576,14 @@ void XdgPortalTest::sendNotificationPixmap()
     notify->setFlags(KNotification::DefaultEvent);
     notify->setTitle(QLatin1String("Notification test"));
     notify->setText(QLatin1String("<html><b>Hello world!!<b><html>"));
-    notify->setActions(QStringList { QStringLiteral("Action 1"), QStringLiteral("Action 2")});
+    KNotificationAction *action1 = notify->addAction(QStringLiteral("Action 1"));
+    KNotificationAction *action2 = notify->addAction(QStringLiteral("Action 2"));
+    connect(action1, &KNotificationAction::activated, this, [this, action1] () {
+        this->notificationActivated(action1->label());
+    });
+    connect(action2, &KNotificationAction::activated, this, [this, action2] () {
+        this->notificationActivated(action2->label());
+    });
 
     QPixmap pixmap(64, 64);
     pixmap.fill(Qt::red);
@@ -585,7 +597,6 @@ void XdgPortalTest::sendNotificationPixmap()
 void XdgPortalTest::sendNotificationDefault()
 {
     auto notify = new KNotification(QLatin1String("notification"));
-    connect(notify, qOverload<uint>(&KNotification::activated), this, &XdgPortalTest::notificationActivated);
     connect(m_mainWindow->notifyCloseButton, &QPushButton::clicked, notify, &KNotification::close);
     connect(notify, &KNotification::closed, this, [this] () {
         m_mainWindow->notifyCloseButton->setDisabled(true);
@@ -594,8 +605,18 @@ void XdgPortalTest::sendNotificationDefault()
     notify->setFlags(KNotification::DefaultEvent);
     notify->setTitle(QLatin1String("Notification test"));
     notify->setText(QLatin1String("<html><b>Hello world!!<b><html>"));
-    notify->setActions(QStringList { QStringLiteral("Action 1"), QStringLiteral("Action 2")});
-    notify->setDefaultAction(QStringLiteral("banana"));
+    KNotificationAction *action1 = notify->addAction(QStringLiteral("Action 1"));
+    KNotificationAction *action2 = notify->addAction(QStringLiteral("Action 2"));
+    KNotificationAction *actionDefault = notify->addDefaultAction(QStringLiteral("Default action"));
+    connect(action1, &KNotificationAction::activated, this, [this, action1] () {
+        this->notificationActivated(action1->label());
+    });
+    connect(action2, &KNotificationAction::activated, this, [this, action2] () {
+        this->notificationActivated(action2->label());
+    });
+    connect(actionDefault, &KNotificationAction::activated, this, [this, actionDefault] () {
+        this->notificationActivated(actionDefault->label());
+    });
 
     m_mainWindow->notifyCloseButton->setEnabled(true);
     notify->sendEvent();

@@ -59,7 +59,7 @@ public Q_SLOTS:
     void gotListShortcutsResponse(uint, const QVariantMap &results);
     void inhibitRequested();
     void uninhibitRequested();
-    void notificationActivated(uint action);
+    void notificationActivated(const QString &label);
     void openFileRequested();
     void openFileModalRequested();
     void openDirRequested();

@@ -25,7 +25,8 @@ target_link_libraries(xdg-portal-test-kde
     KF${QT_MAJOR_VERSION}::KIOFileWidgets
     KF${QT_MAJOR_VERSION}::Notifications
     KF${QT_MAJOR_VERSION}::WindowSystem
-    KF${QT_MAJOR_VERSION}::WaylandClient
+    Wayland::Client
+    Plasma::KWaylandClient
     GLIB2::GLIB2
     ${GSTREAMER_LIBRARIES}
 )
