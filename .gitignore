@@ -4,5 +4,5 @@
 /flatpak-build/app/
 /flatpak-build/repo/
 .vscode
-/build/
+/build*/
 
