@@ -32,8 +32,9 @@ find_package(KF${QT_MAJOR_VERSION} REQUIRED
     KIO
     Notifications
     WindowSystem
-    Wayland
 )
+
+find_package(KWayland)
 
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0 -DQT_NO_KEYWORDS)
 add_definitions(-DQT_USE_FAST_CONCATENATION -DQT_USE_FAST_OPERATOR_PLUS)
