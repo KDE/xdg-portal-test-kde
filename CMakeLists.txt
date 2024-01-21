@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 ################# set KDE specific information #################
 
-find_package(ECM 5.102.0 REQUIRED NO_MODULE)
+find_package(ECM 5.240.0 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH})
 
 include(KDEInstallDirs)
@@ -21,13 +21,13 @@ find_package(GLIB2 REQUIRED)
 
 pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0)
 
-find_package(Qt${QT_MAJOR_VERSION} ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
+find_package(Qt6 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
     Core
     DBus
     Widgets
 )
 
-find_package(KF${QT_MAJOR_VERSION} REQUIRED
+find_package(KF6 REQUIRED
     I18n
     KIO
     Notifications
