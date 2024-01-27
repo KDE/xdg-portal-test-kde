@@ -2,7 +2,7 @@ ARCH ?= $(shell flatpak --default-arch)
 REPO ?= repo
 FB_ARGS ?= "--user"
 TMP ?= app
-INSTALL_SOURCE ?= "--install-deps-from=flathub"
+INSTALL_SOURCE ?= "--install-deps-from=kde-runtime-nightly"
 
 build: remotes
 	flatpak-builder $(INSTALL_SOURCE) $(FB_ARGS) --arch=$(ARCH) --force-clean --require-changes --ccache --repo=$(REPO) --subject="build of org.kde.xdg-portal-test-kde, `date` (`git rev-parse HEAD`)" ${EXPORT_ARGS} $(TMP) org.kde.xdg-portal-test-kde.json
@@ -15,6 +15,7 @@ $(REPO)/config:
 
 remotes:
 	flatpak --user remote-add $(ARGS) --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+	flatpak --user remote-add $(ARGS) --if-not-exists kde-runtime-nightly https://cdn.kde.org/flatpak/kde-runtime-nightly/kde-runtime-nightly.flatpakrepo
 
 check:
 	json-glib-validate *.json
