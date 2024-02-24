@@ -230,15 +230,9 @@ XdgPortalTest::XdgPortalTest(QWidget *parent, Qt::WindowFlags f)
         m_mainWindow->shortcutState->setText(QStringLiteral("Deactivated!"));
     });
 
-    Shortcuts initialShortcuts = {
-        { QStringLiteral("AwesomeTrigger"), { { QStringLiteral("description"), QStringLiteral("Awesome Description") } } }
-    };
-    QDBusArgument arg;
-    arg << initialShortcuts;
     auto reply = m_shortcuts->CreateSession({
         { QLatin1String("session_handle_token"), "XdpPortalTest" },
         { QLatin1String("handle_token"), getRequestToken() },
-        { QLatin1String("shortcuts"), QVariant::fromValue(arg) },
     });
     reply.waitForFinished();
     if (reply.isError()) {
@@ -1029,7 +1023,10 @@ void XdgPortalTest::gotListShortcutsResponse(uint code, const QVariantMap& resul
 
 void XdgPortalTest::configureShortcuts()
 {
-    auto reply = m_shortcuts->BindShortcuts(m_globalShortcutsSession, {},  parentWindowId(), { { "handle_token", getRequestToken() } });
+    Shortcuts shortcuts = {
+        { QStringLiteral("AwesomeTrigger"), { { QStringLiteral("description"), QStringLiteral("Awesome Description") } } }
+    };
+    auto reply = m_shortcuts->BindShortcuts(m_globalShortcutsSession, shortcuts,  parentWindowId(), { { "handle_token", getRequestToken() } });
     reply.waitForFinished();
     if (reply.isError()) {
         qWarning() << "failed to call BindShortcuts" << reply.error();
