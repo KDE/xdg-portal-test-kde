@@ -66,6 +66,7 @@ public Q_SLOTS:
     void sendNotification();
     void sendNotificationPixmap();
     void sendNotificationDefault();
+    void sendNotificationTextReply();
     void requestScreenSharing();
     void requestScreenshot();
     void requestAccount();

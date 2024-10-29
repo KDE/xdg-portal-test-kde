@@ -27,6 +27,7 @@
 
 #include <KIO/OpenUrlJob>
 #include <KNotification>
+#include <KNotificationReplyAction>
 #include <KWindowSystem>
 
 #include <gst/gst.h>
@@ -200,6 +201,7 @@ XdgPortalTest::XdgPortalTest(QWidget *parent, Qt::WindowFlags f)
     connect(m_mainWindow->notifyButton, &QPushButton::clicked, this, &XdgPortalTest::sendNotification);
     connect(m_mainWindow->notifyPixmapButton, &QPushButton::clicked, this, &XdgPortalTest::sendNotificationPixmap);
     connect(m_mainWindow->notifyWithDefault, &QPushButton::clicked, this, &XdgPortalTest::sendNotificationDefault);
+    connect(m_mainWindow->notifyWithText, &QPushButton::clicked, this, &XdgPortalTest::sendNotificationTextReply);
     connect(m_mainWindow->printButton, &QPushButton::clicked, this, &XdgPortalTest::printDocument);
     connect(m_mainWindow->requestDeviceAccess, &QPushButton::clicked, this, &XdgPortalTest::requestDeviceAccess);
     connect(m_mainWindow->screenShareButton, &QPushButton::clicked, this, &XdgPortalTest::requestScreenSharing);
@@ -617,6 +619,37 @@ void XdgPortalTest::sendNotificationDefault()
     connect(actionDefault, &KNotificationAction::activated, this, [this, actionDefault] () {
         this->notificationActivated(actionDefault->label());
     });
+
+    m_mainWindow->notifyCloseButton->setEnabled(true);
+    notify->sendEvent();
+}
+
+void XdgPortalTest::sendNotificationTextReply()
+{
+    auto notify = new KNotification(QLatin1String("notification"));
+    connect(m_mainWindow->notifyCloseButton, &QPushButton::clicked, notify, &KNotification::close);
+    connect(notify, &KNotification::closed, this, [this]() {
+        m_mainWindow->notifyCloseButton->setDisabled(true);
+    });
+
+    notify->setFlags(KNotification::DefaultEvent);
+    notify->setTitle(QLatin1String("Notification test"));
+    notify->setText(QLatin1String("<html><b>Hello world!!<b><html>"));
+    KNotificationAction *action1 = notify->addAction(QStringLiteral("Action 1"));
+    KNotificationAction *action2 = notify->addAction(QStringLiteral("Action 2"));
+    connect(action1, &KNotificationAction::activated, this, [this, action1]() {
+        this->notificationActivated(action1->label());
+    });
+    connect(action2, &KNotificationAction::activated, this, [this, action2]() {
+        this->notificationActivated(action2->label());
+    });
+
+    auto replyAction = std::make_unique<KNotificationReplyAction>(i18nc("@action:button", "Reply"));
+    replyAction->setPlaceholderText(i18nc("@info:placeholder", "Reply to Dave..."));
+    QObject::connect(replyAction.get(), &KNotificationReplyAction::replied, [this](const QString &text) {
+        notificationActivated(text);
+    });
+    notify->setReplyAction(std::move(replyAction));
 
     m_mainWindow->notifyCloseButton->setEnabled(true);
     notify->sendEvent();
