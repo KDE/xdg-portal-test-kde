@@ -552,7 +552,7 @@ void XdgPortalTest::sendNotification()
 
     notify->setFlags(KNotification::DefaultEvent);
     notify->setTitle(QLatin1String("Notification test"));
-    notify->setText(QLatin1String("<html><b>Hello world!!<b><html>"));
+    notify->setText(QLatin1String("<html><b>Hello world!!</b></html>"));
     KNotificationAction *action1 = notify->addAction(QStringLiteral("Action 1"));
     KNotificationAction *action2 = notify->addAction(QStringLiteral("Action 2"));
     connect(action1, &KNotificationAction::activated, this, [this, action1] () {
@@ -577,7 +577,7 @@ void XdgPortalTest::sendNotificationPixmap()
 
     notify->setFlags(KNotification::DefaultEvent);
     notify->setTitle(QLatin1String("Notification test"));
-    notify->setText(QLatin1String("<html><b>Hello world!!<b><html>"));
+    notify->setText(QLatin1String("<html><b>Hello world!!</b></html>"));
     KNotificationAction *action1 = notify->addAction(QStringLiteral("Action 1"));
     KNotificationAction *action2 = notify->addAction(QStringLiteral("Action 2"));
     connect(action1, &KNotificationAction::activated, this, [this, action1] () {
@@ -606,7 +606,7 @@ void XdgPortalTest::sendNotificationDefault()
 
     notify->setFlags(KNotification::DefaultEvent);
     notify->setTitle(QLatin1String("Notification test"));
-    notify->setText(QLatin1String("<html><b>Hello world!!<b><html>"));
+    notify->setText(QLatin1String("<html><b>Hello world!!</b></html>"));
     KNotificationAction *action1 = notify->addAction(QStringLiteral("Action 1"));
     KNotificationAction *action2 = notify->addAction(QStringLiteral("Action 2"));
     KNotificationAction *actionDefault = notify->addDefaultAction(QStringLiteral("Default action"));
@@ -634,7 +634,7 @@ void XdgPortalTest::sendNotificationTextReply()
 
     notify->setFlags(KNotification::DefaultEvent);
     notify->setTitle(QLatin1String("Notification test"));
-    notify->setText(QLatin1String("<html><b>Hello world!!<b><html>"));
+    notify->setText(QLatin1String("<html><b>Hello world!!</b></html>"));
     KNotificationAction *action1 = notify->addAction(QStringLiteral("Action 1"));
     KNotificationAction *action2 = notify->addAction(QStringLiteral("Action 2"));
     connect(action1, &KNotificationAction::activated, this, [this, action1]() {
