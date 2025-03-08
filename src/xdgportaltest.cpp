@@ -929,7 +929,7 @@ void XdgPortalTest::addLauncher()
                                                           QLatin1String("PrepareInstall"));
 
     QBuffer buffer;
-    static constexpr auto maxSize = 512;
+    static constexpr auto maxSize = 128;
     QIcon::fromTheme("utilities-terminal").pixmap(maxSize, maxSize).save(&buffer,"PNG");
     PortalIcon icon {QStringLiteral("bytes"), QDBusVariant(buffer.buffer())};
 
