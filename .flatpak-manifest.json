@@ -1,7 +1,7 @@
 {
     "app-id": "org.kde.xdg-portal-test-kde",
     "runtime": "org.kde.Platform",
-    "runtime-version": "6.6-kf6preview",
+    "runtime-version": "6.8",
     "sdk": "org.kde.Sdk",
     "command": "xdg-portal-test-kde",
     "finish-args": [
