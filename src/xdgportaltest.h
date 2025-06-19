@@ -53,6 +53,7 @@ public Q_SLOTS:
     void gotAccountResponse(uint response, const QVariantMap &results);
     void gotGlobalShortcutsCreateSessionResponse(uint, const QVariantMap &results);
     void gotListShortcutsResponse(uint, const QVariantMap &results);
+    void gotLocationUpdated(const QDBusObjectPath &session_handle, const QVariantMap &results);
     void inhibitRequested();
     void uninhibitRequested();
     void notificationActivated(const QString &label);
@@ -76,7 +77,8 @@ public Q_SLOTS:
     void gotLauncher(uint response, const QVariantMap &results);
     void removeLauncher();
     void configureShortcuts();
-
+    void requestLocation();
+    void startLocation(QDBusObjectPath session);
 private:
     bool isRunningSandbox();
     QString getSessionToken();

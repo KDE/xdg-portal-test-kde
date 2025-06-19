@@ -44,6 +44,8 @@ Q_LOGGING_CATEGORY(XdgPortalTestKde, "xdg-portal-test-kde")
 Q_DECLARE_METATYPE(XdgPortalTest::Stream);
 Q_DECLARE_METATYPE(XdgPortalTest::Streams);
 
+using namespace Qt::StringLiterals;
+
 struct PortalIcon {
     QString str;
     QDBusVariant data;
@@ -210,6 +212,7 @@ XdgPortalTest::XdgPortalTest(QWidget *parent, Qt::WindowFlags f)
     connect(m_mainWindow->appChooserButton, &QPushButton::clicked, this, &XdgPortalTest::chooseApplication);
     connect(m_mainWindow->webAppButton, &QPushButton::clicked, this, &XdgPortalTest::addLauncher);
     connect(m_mainWindow->removeWebAppButton, &QPushButton::clicked, this, &XdgPortalTest::removeLauncher);
+    connect(m_mainWindow->startLocationSession, &QPushButton::clicked, this, &XdgPortalTest::requestLocation);
 
     // launcher buttons only work correctly inside sandboxes
     m_mainWindow->webAppButton->setEnabled(isRunningSandbox());
@@ -1072,3 +1075,72 @@ void XdgPortalTest::configureShortcuts()
     // BindShortcuts and ListShortcuts answer the same
     connect(req, &OrgFreedesktopPortalRequestInterface::Response, this, &XdgPortalTest::gotListShortcutsResponse);
 }
+
+void XdgPortalTest::requestLocation()
+{
+    QDBusMessage message = QDBusMessage::createMethodCall(desktopPortalService(),
+                                                          desktopPortalPath(),
+                                                          "org.freedesktop.portal.Location"_L1,
+                                                          "CreateSession"_L1);
+
+    message << QVariantMap { { "session_handle_token"_L1, getSessionToken() }, 
+                             { "distance-threshold"_L1, m_mainWindow->locationDistanceThreshold->value() },
+                             { "time-threshold"_L1, m_mainWindow->locationTimeThreshold->value() },
+                             { "accuracy"_L1, (uint)m_mainWindow->locationAccuracy->currentIndex() },
+                             { "handle_token"_L1, getRequestToken() } };
+
+    QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
+    auto watcher = new QDBusPendingCallWatcher(pendingCall);
+    connect(watcher, &QDBusPendingCallWatcher::finished, this, [this] (QDBusPendingCallWatcher *watcher) {
+        QDBusPendingReply<QDBusObjectPath> reply = *watcher;
+        if (reply.isError()) {
+            qWarning() << "Couldn't get reply";
+            qWarning() << "Error: " << reply.error().message();
+        } else {
+            startLocation(reply.value());
+        }
+    });
+
+    QDBusConnection::sessionBus().connect(desktopPortalService(),
+                                        desktopPortalPath(),
+                                        "org.freedesktop.portal.Location"_L1,
+                                        "LocationUpdated"_L1,
+                                        this,
+                                        SLOT(gotLocationUpdated(QDBusObjectPath,QVariantMap)));
+}
+
+void XdgPortalTest::startLocation(QDBusObjectPath session)
+{
+    QDBusMessage message = QDBusMessage::createMethodCall(desktopPortalService(),
+                                                          desktopPortalPath(),
+                                                          "org.freedesktop.portal.Location"_L1,
+                                                          "Start"_L1);
+
+    message << QVariant::fromValue(session)
+            << parentWindowId()
+            << QVariantMap { { "handle_token"_L1, getRequestToken() } };
+
+    QDBusPendingCall pendingCall = QDBusConnection::sessionBus().asyncCall(message);
+    pendingCall.waitForFinished();
+    QDBusPendingReply<QDBusObjectPath> reply = pendingCall.reply();
+    if (reply.isError()) {
+        qWarning() << "Failed to start location session:" << reply.error();
+    }
+}
+
+void XdgPortalTest::gotLocationUpdated(const QDBusObjectPath &session_handle, const QVariantMap &results)
+{
+    qDebug() << "Location updated:" << results;
+
+    QString resultsString = u"Location results:\n"_s;
+    resultsString += u"    Session handle: %1\n"_s.arg(session_handle.path());
+    resultsString += u"    Latitude: %1\n"_s.arg(results["Latitude"].toDouble());
+    resultsString += u"    Longitude: %1\n"_s.arg(results["Longitude"].toDouble());
+    resultsString += u"    Altitude: %1\n"_s.arg(results["Altitude"].toDouble());
+    resultsString += u"    Accuracy: %1\n"_s.arg(results["Accuracy"].toDouble());
+    resultsString += u"    Speed: %1\n"_s.arg(results["Speed"].toDouble());
+    resultsString += u"    Heading: %1\n"_s.arg(results["Heading"].toDouble());
+    resultsString += u"    Timestamp: %1\n"_s.arg(results["Timestamp"].toLongLong());
+    m_mainWindow->locationResultsLabel->setText(resultsString);
+}
+
