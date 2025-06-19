@@ -527,6 +527,89 @@
        </item>
       </layout>
      </item>
+     <item row="27" column="0">
+      <widget class="QLabel" name="label_14">
+       <property name="text">
+        <string>Location:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="27" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_11">
+       <item>
+        <widget class="QComboBox" name="locationAccuracy">
+         <item>
+          <property name="text">
+           <string>None</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Country</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>City</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Neighborhood</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Street</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Exact</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_19">
+         <property name="text">
+          <string>Distance threshold</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="locationDistanceThreshold">
+         <property name="value">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_20">
+         <property name="text">
+          <string>Time threshold</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="locationTimeThreshold">
+         <property name="value">
+          <number>0</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="startLocationSession">
+         <property name="text">
+          <string>Request location</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="28" column="1">
+      <widget class="QLabel" name="locationResultsLabel"/>
+     </item>
     </layout>
     <zorder>accountResultsLabel</zorder>
     <zorder>label</zorder>
