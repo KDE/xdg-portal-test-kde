@@ -24,10 +24,14 @@ pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0)
 find_package(Wayland 1.15 REQUIRED COMPONENTS Client)
 find_package(Qt6 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
     Core
+    Gui
     DBus
     Widgets
     WaylandClient
 )
+if(Qt6Gui_VERSION VERSION_GREATER_EQUAL "6.10.0")
+    find_package(Qt6 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS GuiPrivate)
+endif()
 
 find_package(KF6 REQUIRED
     I18n
